@@ -1,6 +1,6 @@
 # Adaptive tiled candidate v3
 
-`ios-tiled-adaptive-conv-v3` is the iPhone research app's default. V1 and v2 remain selectable; screenshot decoding follows the candidate saved with the run. Android is unchanged.
+`ios-tiled-adaptive-conv-v3` is the iPhone research app's default. V1 and v2 remain selectable; screenshot decoding follows the candidate saved with the run.
 
 Each complete 132×120 tile carries a synchronization marker and the complete PC + 128-bit ID + CRC32 frame. A rate-1/2 convolutional code (constraint length 7, generators octal 171/133, six terminating zero bits) adds redundancy. Soft Viterbi decoding rejects ambiguous paths and invalid checksums. CRC is error detection, not authentication.
 

@@ -1,10 +1,10 @@
 # Step 3: Threat model, privacy rules, and assurance policy
 
 Date: September 25, 2026  
-Policy identifier: `proofcam-android-pilot-v1`  
+Policy identifier: `proofcam-ios-pilot-v1`
 Status: Engineering policy baseline; not implemented or independently audited. This is the internal data-handling policy, not a claim of legal compliance or a published service privacy notice.
 
-Applies to the [Android photo pilot](02-pilot-scope-and-free-development.md). Armaan Singh is accountable for policy changes, private server access, incident response, and release decisions. Implementation, testing, and independent review remain later gates. All work uses free resources.
+Applies to the [iPhone photo pilot](02-pilot-scope-and-free-development.md). Armaan Singh is accountable for policy changes, private server access, incident response, and release decisions. Implementation, testing, and independent review remain later gates. All work uses free resources.
 
 ## Security objectives and limits
 
@@ -49,7 +49,7 @@ Use configured HTTPS service endpoints only. An embedded identifier must never s
 | T10 | Leak enrollment, images, or lookup history | Local processing; field allowlists; redacted logs; no media telemetry; no bulk public listing | Traffic capture, exported-record inspection, backup/log tests | IDs and exact hashes are linkable; operator sees live requests |
 | T11 | Crash, lose storage, expire challenge, or lose network | Durable queue, idempotency, preflight, explicit lower-assurance path | Restart each lifecycle transition; verify no false registered state or unexplained loss | Lost/uninstalled device without user export may lose local-only media |
 | T12 | Steal issuer key, malicious admin, poisoned restore | Protected production signer, trust rotation/revocation, minimal privileges, deletion tombstones | Compromise drill; stale/revoked trust tests; restore suppresses deleted records | Revocation needs current information; copied records cannot be recalled |
-| T13 | Tamper with APK or watermark-model update | Signed APK distribution; publisher fingerprint; signed/versioned model manifest if models are used; reject rollback outside policy | Modified packages/models and unauthorized versions rejected | Trust in the publisher is still required; sideload alone is not an attestation |
+| T13 | Tamper with app or watermark-model update | Platform code signing; configured application identity; signed/versioned model manifest if models are used; reject rollback outside policy | Modified packages/models and unauthorized versions rejected | Trust in the publisher is still required; installation alone is not an attestation |
 | T14 | Enumerate IDs, exhaust issuance/lookup resources | Random identifiers, no public enumeration, authenticated issuance, bounded quotas | Quota exhaustion returns clear retryable errors; no unbounded allocation or private details | Distributed denial of service may reduce availability |
 
 ## Capture-assurance decision policy
@@ -61,22 +61,21 @@ For this pilot, **basic integrity registration is available only to a server-adm
 | Case | Registration decision | Permitted capture statements |
 | --- | --- | --- |
 | Valid enrollment/signature, fresh bound challenge, and all required available platform evidence validates | Issue if production signing is available | List exactly the app/device/challenge checks passed, each with time scope; no sensor-origin claim |
-| Direct APK install; platform checks unavailable or unsupported, valid admitted enrollment/signature | Basic integrity certificate only | “Registered export; app/device capture assurance unavailable”; independently validated enrollment-key evidence may be listed at enrollment scope |
-| Sideload yields licensing/recognition verdicts without Play entitlement/recognition | Treat those particular fields as unavailable assurance for this distribution policy, not proof of malware | Never claim Play-recognized/licensed status; separately check all supplied cryptographic evidence and any known signing identity |
+| Personal-device install; platform checks unavailable or unsupported, valid admitted enrollment/signature | Basic integrity certificate only | “Registered export; app/device capture assurance unavailable”; independently validated enrollment-key evidence may be listed at enrollment scope |
 | Valid enrollment/signature, offline capture | Queue; issue basic integrity certificate after successful synchronization | No fresh capture challenge; later evidence applies to synchronization only |
 | Original online challenge expired before accepted registration | Reject online claim; allow explicit newly signed reduced-assurance request referencing original session and unchanged asset hashes, if no other validation failed | No fresh capture challenge; never replace it with a new capture challenge for old bytes |
 | Attestation service/network temporarily unavailable | Keep online request pending until expiry, or explicitly choose reduced assurance and sign a new request | No unavailable check can be reported passed; do not strip a previously observed failure |
 | Invalid signature, digest/package/signing-identity mismatch, revoked key/chain, contradictory evidence, failed required device validation, forged token, replay, or conflicting ID | Reject certification; retain local media with reason | No trusted capture claim; do not retry under reduced assurance to hide the failure |
-| Keystore/local signing unavailable or enrollment not yet admitted | Save locally; registration pending or unavailable | No public certificate until minimum signing/admission requirements are satisfied; first offline use may enroll later without retrospective evidence |
+| Secure Enclave / Keychain/local signing unavailable or enrollment not yet admitted | Save locally; registration pending or unavailable | No public certificate until minimum signing/admission requirements are satisfied; first offline use may enroll later without retrospective evidence |
 | Only development signer exists | Development record only; public verifier rejects development issuer | “Development record”; no production integrity badge |
 
-A licensing absence alone is distinct from a failed cryptographic validation. If evidence reports a concrete mismatch against ProofCam's configured identity, the rejection rule takes precedence. A client reporting “unsupported” is not proof that a failed check was absent; the reduced path simply offers no platform capture-assurance claim. Known server-side failures remain associated with the session/installation under the private retention policy.
+Missing platform evidence is distinct from a failed cryptographic validation. If evidence reports a concrete mismatch against ProofCam's configured identity, the rejection rule takes precedence. A client reporting “unsupported” is not proof that a failed check was absent; the reduced path simply offers no platform capture-assurance claim. Known server-side failures remain associated with the session/installation under the private retention policy.
 
 A valid signature from an admitted but unattested installation establishes signed submission and hash binding only. This is intentionally weaker than an attested app-capture claim. The UI must make that visible even when the supplied file exactly matches a trusted baseline.
 
-Enrollment key attestation must be validated on the server against maintained trusted roots, revocation information, challenge binding, application identity where present, and relevant security levels. Key attestation at enrollment does not independently attest each later capture. Do not hard-code one eternal root or promote a client-reported hardware level. Android documents the server-side validation requirements in its [key attestation guidance](https://developer.android.com/privacy-and-security/security-key-attestation).
 
-Play Integrity describes separate request-binding, licensing, app-recognition, and device verdicts. Sideloading can lack Play entitlement; these signals are not interchangeable. Validate any token used and its request digest/freshness server-side. See [Android's verdict definitions](https://developer.android.com/google/play/integrity/verdicts). Actual availability for our free distribution path must be demonstrated before enabling a claim.
+
+App-bound evidence is scoped by the [optional App Attest implementation](../provenance/APP-ATTEST.md). Secure Enclave key possession alone does not establish server-attested hardware protection or camera origin.
 
 ## Verifier trust policy
 
@@ -97,7 +96,7 @@ Durations below are pilot implementation requirements, not measured deletion beh
 | Final photos and local thumbnails | App-private device storage; shared only by user action | User's capture library | Until explicit local deletion or uninstall; no automatic cloud backup |
 | Working capture buffers/files | Protected device storage only | Finalization and crash recovery | Delete after verified final export is durably stored; clean abandoned work within 24 hours of next app run only when a safe export exists or user explicitly discards it; preserve sole recoverable capture |
 | Imported verification copy and decoded buffers | Device only | Local extraction/hash | Release on completion/cancel; remove crash leftovers on next launch, without deleting the source file |
-| Local installation private key, queue, management credentials | Keystore/app-private storage; exclude from backup/transfer | Signing, retries, ownership | Until local reset/uninstall or explicit management reset; no raw private-key export; new installation requires new enrollment |
+| Local installation private key, queue, management credentials | Secure Enclave / Keychain/app-private storage; exclude from backup/transfer | Signing, retries, ownership | Until local reset/uninstall or explicit management reset; no raw private-key export; new installation requires new enrollment |
 | Public certificate | Public lookup and optionally user-exported receipt | Verify registered baseline | Until authorized public removal; indefinite while published, subject to service availability; others may keep copies indefinitely |
 | Public certificate fields | Public | Record lookup and integrity | Only ID, media type, hashes, dimensions, schema/model/algorithm/policy versions, issuer/key ID, certificate signature, declared device time/source, registration time, completion and coarse check results |
 | Enrollment public key, private owner/asset mapping, check summaries | Restricted server tables | Validate issuance and authorize removal | While enrollment or records remain active; purge within 30 days after closure/removal of all associated records unless minimal revocation/tombstone entries are needed |
@@ -117,12 +116,12 @@ Do not use public GitHub repositories/releases for participant records, private 
 
 ## Permissions, disclosure, and network rules
 
-- Ask for camera permission only when entering capture. Verification uses a system picker/share intent with narrow URI access; do not request broad photo-library access to verify one file.
+- Ask for camera permission only when entering capture. Verification uses a system file picker/share sheet with access limited to the selected file; do not request broad photo-library access to verify one file.
 - No microphone, contacts, location, advertising identifier, or analytics SDK in the photo pilot. Strip unnecessary export metadata; use generated filenames without identity or location.
 - Tell users before first registration that record IDs/hashes are public, the service sees requests, registration requires network access, and public removal cannot recall copies.
 - Extraction and hashing run locally. ID lookup is the disclosed verification action; exact-file-digest lookup requires explicit user approval. Never upload images or perceptual descriptors by default.
 - Explicit sharing/export is a user's action to an external destination with its own retention behavior. A public receipt is distinct from a secret management-recovery export; never bundle them.
-- Disable automatic backup of media, queues, credentials, and private app evidence with explicit cloud-backup and device-transfer exclusions. Test both paths on supported devices; do not rely only on a single manifest flag. Android documents separate backup and transfer rules in [Auto Backup guidance](https://developer.android.com/identity/data/autobackup).
+- Exclude private media, queues, credentials, and app evidence from automatic backup and device transfer; validate these protections on the supported iPhone.
 - Opt-in diagnostics are separate from using capture/verification. No sensitive values in crash reports, network traces, filenames, or exception messages.
 
 ## Removal, recovery, and restore behavior
@@ -151,7 +150,7 @@ If issuer compromise is suspected: stop issuance, preserve minimal permitted aud
 
 A public deployment still requires protected production signing under CAP7, tested revocations, privacy traffic audit, deletion/restore tests, and independent security review. No-cost development does not waive these gates. If compliant free infrastructure is unavailable, continue locally and label deployment pending.
 
-Release is blocked by false positive integrity, prohibited data leakage, canonicalization disagreement, replay acceptance, unsigned model updates if models are used, or unexplained media loss. Goal 18 must exercise T01–T14 and every assurance branch above, including absence versus failure and sideloaded distribution. Evidence must be recorded; this document is not a passed test report.
+Release is blocked by false positive integrity, prohibited data leakage, canonicalization disagreement, replay acceptance, unsigned model updates if models are used, or unexplained media loss. Goal 18 must exercise T01–T14 and every assurance branch above, including absence versus failure and personal-device provisioning. Evidence must be recorded; this document is not a passed test report.
 
 ## Step 3 completion and handoff
 

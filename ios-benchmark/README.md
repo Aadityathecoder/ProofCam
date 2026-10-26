@@ -1,6 +1,6 @@
 # ProofCam iPhone research app
 
-An iOS 17+ SwiftUI port of the Android watermark experiment, intended for the available **iPhone 16 Pro**. This is research software, not the production capture/certificate app. It uses free local tools without analytics or automatic media uploads. Default builds make no app network requests; optional App Attest calls contact Apple. A separate [local provenance service](../provenance/README.md) now accepts device-signed requests exported from the camera experiment; it issues development records only.
+An iOS 17+ SwiftUI watermark experiment, intended for the available **iPhone 16 Pro**. This is research software, not the production capture/certificate app. It uses free local tools without analytics or automatic media uploads. Default builds make no app network requests; optional App Attest calls contact Apple. A separate [local provenance service](../provenance/README.md) now accepts device-signed requests exported from the camera experiment; it issues development records only.
 
 **Status:** source and Xcode project prepared. Portable Swift tests, synthetic geometry simulations, and three raw RGB cross-decoder fixtures passed on Linux with Swift 6.0.3. The app source passes Swift syntax parsing. See the [test audit](TESTING.md) for coverage and outstanding checks. **No Apple SDK typecheck, Xcode build, simulator run, signing, or physical iPhone test has been performed here.** Run the Mac validation below before collecting evidence. See [host parity results](../benchmark/reports/step06-ios-parity.json).
 
@@ -34,9 +34,9 @@ New runs default to [adaptive tiled candidate v3](ADAPTIVE-V3.md), which recover
 
 `ios-qim12-bilinear-v1` uses the same 176-bit PC + full 128-bit ID + CRC32 framing, three-frame minimum capacity, coefficient (1,2) QIM with step 12, and bounded native/1024/uniform-border search. Every eligible search view runs even after a detection, retaining conflicting IDs. A CRC checks accidental errors; it is not a signature or authenticity proof.
 
-Inputs are capped at 25 MiB, 20 megapixels and 16384 pixels per side. ImageIO normalizes orientation and CoreGraphics renders opaque 8-bit sRGB. Embedding scales to a maximum long edge of 1024 without upscaling. The portable resampler explicitly uses pixel-center bilinear interpolation. Apple image decoding/color conversion/JPEG differ from Android and Python, so neither desktop nor Android results qualify this candidate. Cross-decoder checks allow verified floating-point midpoint differences of up to six channel levels; pixels are not byte-identical.
+Inputs are capped at 25 MiB, 20 megapixels and 16384 pixels per side. ImageIO normalizes orientation and CoreGraphics renders opaque 8-bit sRGB. Embedding scales to a maximum long edge of 1024 without upscaling. The portable resampler explicitly uses pixel-center bilinear interpolation. Apple image decoding/color conversion/JPEG differ from Python, so desktop results do not qualify this candidate. Cross-decoder checks allow verified floating-point midpoint differences of up to six channel levels; pixels are not byte-identical.
 
-The principal workflow matches Android, but this first port uses Files import and **does not measure memory** (`not_measured` in JSON). It does not yet establish identical platform performance or robustness. Crop/rotation weaknesses in the conventional algorithm remain. Twenty repeated timings are not twenty independent robustness samples. Physical iPhone evidence does not clear the Android-device blocker for roadmap step 6.
+The watermark research workflow uses Files import and **does not measure memory** (`not_measured` in JSON). It does not yet establish identical platform performance or robustness. Crop/rotation weaknesses in the conventional algorithm remain. Twenty repeated timings are not twenty independent robustness samples. Physical iPhone qualification remains pending.
 
 ## Reproduce host checks
 
@@ -46,11 +46,12 @@ With Swift 5.9+:
 swift test --package-path ios-benchmark/Core -c release
 ```
 
-For cross-decoder checks, first create the ignored fixtures using the Android [host parity procedure](../android-benchmark/README.md), then:
+For cross-decoder checks, restore the starter corpus with `python3 -m benchmark.corpus`, then create the ignored Python fixtures and run:
 
 ```sh
+python3 ios-benchmark/tools/prepare_parity_fixtures.py
 swift build --package-path ios-benchmark/Core -c release
 python3 ios-benchmark/tools/check_parity.py ios-benchmark/Core/.build/release/CoreParity
 ```
 
-The Python checker uses the existing benchmark Python dependencies and records source hashes. It checks Python/Java-to-Swift extraction, Swift round trips, Swift-to-Python extraction, and pixel differences against known QIM midpoint locations. It does not run any Apple code. `tools/create_project.py` regenerates the checked-in Xcode project deterministically; no third-party Xcode project generator is needed.
+The Python checker uses the existing benchmark Python dependencies and records source hashes. It checks Python-to-Swift extraction, Swift round trips, Swift-to-Python extraction, and pixel differences against known QIM midpoint locations. It does not run any Apple code. `tools/create_project.py` regenerates the checked-in Xcode project deterministically; no third-party Xcode project generator is needed.

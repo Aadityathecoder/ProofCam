@@ -62,7 +62,7 @@ Create watermarked final JPEGs externally, then supply a JSONL manifest through 
 
 Paths are relative to that exports manifest. Assign per-asset IDs at embedding and retain them in the manifest. Never count a partial ID as a successful recovery. Do not silently truncate identifiers to fit a candidate: revise the benchmark contract and payload design explicitly if goal 7 changes the identifier scheme. Negative inputs cannot be supplied watermarked exports.
 
-Pass `build --device DEVICE_LABEL` to identify the actual decoder execution device; dataset capture origin is stored separately. Candidate metadata must match that scheduled device. The default is `desktop-local-unqualified`, never an Android performance claim.
+Pass `build --device DEVICE_LABEL` to identify the actual decoder execution device; dataset capture origin is stored separately. Candidate metadata must match that scheduled device. The default is `desktop-local-unqualified`, never an iPhone performance claim.
 
 Run the candidate's **entire declared decoder search** once for every scheduled case and record one result per case:
 
@@ -97,8 +97,8 @@ Use the readiness checklist in [goal 5](../docs/05-benchmark-data-and-harness.md
 
 ## Conventional watermark experiments
 
-See [step 6](../docs/06-conventional-watermark-benchmarks.md) for the two DCT candidates, full payload layout, tuning protocol, and limitations. Run `python3 -m benchmark.conventional --out benchmark/runs/conventional-new-version --limit 24` for a fresh local comparison. These baselines perform one native-geometry extraction attempt and make no screenshot or Android support claim.
+See [step 6](../docs/06-conventional-watermark-benchmarks.md) for the two DCT candidates, full payload layout, tuning protocol, and limitations. Run `python3 -m benchmark.conventional --out benchmark/runs/conventional-new-version --limit 24` for a fresh local comparison. These baselines perform one native-geometry extraction attempt and make no screenshot or iPhone support claim.
 
 The [registered comparison](REGISTERED.md) adds lower-strength QIM and a bounded native/1024-pixel/uniform-border search, using the same tuning inputs and test IDs as v1.
 
-The [final step 6 desktop report](../docs/06-conventional-watermark-final-report.md) records the expanded 92-photo/1,000-negative study, nine high-resolution variants, Android research APK, and explicit physical-device blocker.
+The [final step 6 desktop report](../docs/06-conventional-watermark-final-report.md) records the expanded 92-photo/1,000-negative study, nine high-resolution variants, and pending physical-device validation.

@@ -1,6 +1,6 @@
 # Tiled recovery candidate v2
 
-`ios-tiled-sign24-secded-v2` is an experimental alternative to the preserved `ios-qim12-bilinear-v1` candidate. The iPhone research app now defaults to [v3](ADAPTIVE-V3.md); select v2 in the candidate picker to repeat this experiment. Screenshot decoding follows the candidate recorded in the current run, regardless of the picker's subsequent selection. This does not port v2 to the Android app.
+`ios-tiled-sign24-secded-v2` is an experimental alternative to the preserved `ios-qim12-bilinear-v1` candidate. The iPhone research app now defaults to [v3](ADAPTIVE-V3.md); select v2 in the candidate picker to repeat this experiment. Screenshot decoding follows the candidate recorded in the current run, regardless of the picker's subsequent selection.
 
 ## Design
 

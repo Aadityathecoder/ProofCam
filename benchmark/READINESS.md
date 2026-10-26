@@ -64,7 +64,7 @@ python3 -m benchmark.screenshots benchmark/screenshot-intake.csv \
 
 The importer refuses empty/unreviewed intake, synthetic declarations, changed hashes, wrong parent IDs, crossed splits, invalid rectangles, and unsupported sizes/formats. It verifies referenced parent export bytes and preserves complete screenshot bytes. The rectangle is a recovery hint only: it must never change what file is hashed for full integrity. Held-out input requires explicit `--allow-heldout` after evaluation freeze.
 
-Metadata remains operator-attested; the tool does not prove that the operator used the stated device. Actual screenshots cannot test watermark recovery until a candidate embeds IDs. The blank CSV and test fixtures are not screenshot evidence. Available Android devices and the relevant OS/app versions still need to be supplied before physical collection can proceed.
+Metadata remains operator-attested; the tool does not prove that the operator used the stated device. Actual screenshots cannot test watermark recovery until a candidate embeds IDs. The blank CSV and test fixtures are not screenshot evidence. Available iPhone devices and the relevant OS/app versions still need to be supplied before physical collection can proceed.
 
 ## Dataset human-label coverage
 

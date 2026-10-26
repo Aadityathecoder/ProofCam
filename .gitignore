@@ -2,15 +2,10 @@
 .env
 .env.*
 !.env.example
-*.jks
-*.keystore
-local.properties
 
 # Build and editor output
-.gradle/
 **/build/
 .idea/
-*.iml
 .DS_Store
 Thumbs.db
 ~$*

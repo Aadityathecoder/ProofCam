@@ -29,7 +29,7 @@ def embed(image, identifier, candidate='qim12_registered'):
 def uniform_border_box(image):
     """Trim only contiguous, exactly uniform outer bands sharing the corner color.
 
-    Works for simple letterboxes; not an Android UI or arbitrary media detector.
+    Works for simple letterboxes; not an iPhone UI or arbitrary media detector.
     No known synthetic-canvas color, margin, source size, or expected ID is used.
     """
     pixels = np.asarray(image.convert('RGB'))

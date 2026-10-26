@@ -1,6 +1,5 @@
 {
   "actual_screenshots": 0,
-  "android_measurements": 0,
   "buckets": [
     {
       "approx_3_over_n": null,
@@ -867,7 +866,7 @@
     "Unapproved rights and negative eligibility",
     "No geometric synchronization or screenshot region search",
     "CRC is error detection, not authentication; copied/forged payloads remain possible",
-    "Desktop wall time includes Python/Pillow; not Android cost",
+    "Desktop wall time includes Python/Pillow; not iPhone cost",
     "Peak memory not measured"
   ],
   "predictions_received": 796,

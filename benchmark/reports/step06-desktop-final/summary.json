@@ -1,12 +1,11 @@
 {
   "actual_screenshots": 0,
-  "android_measurements": 0,
   "candidate": "qim12_registered",
   "limitations": [
     "Tuning only; no held-out release evaluation",
     "Rights and final negative eligibility remain pending",
     "Unsupported normalization stays in recovery denominators; no quality score for missing pairs",
-    "Desktop timings diagnostic: Gradle/host checks ran concurrently; not controlled Android timing",
+    "Desktop timings diagnostic: host checks ran concurrently; not controlled iPhone timing",
     "Native-resolution variants are reported separately and must not be pooled as new independent sources"
   ],
   "negative_candidates_scheduled": 1000,

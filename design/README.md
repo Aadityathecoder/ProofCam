@@ -4,7 +4,7 @@ Open `prototype.html` in a local browser, keeping `prototype.css` and `prototype
 
 Use the left-hand scenario selectors, then the app controls. Start with Enable camera → Take photo → registration disclosure → Take photo → Finish processing. The captured asset is a single in-memory sample; another capture replaces it. Reset clears the example state. Verification has 15 selectable outcomes.
 
-Everything is simulated. The prototype makes no network requests, opens no real picker/camera/share sheet, accepts no credentials or files, and stores nothing. The Content Security Policy blocks network connections and external dependencies. It is a design artifact, not the Android application or an integrity verifier.
+Everything is simulated. The prototype makes no network requests, opens no real picker/camera/share sheet, accepts no credentials or files, and stores nothing. The Content Security Policy blocks network connections and external dependencies. It is a design artifact, not the iPhone application or an integrity verifier.
 
 The [screen specification](../docs/04-capture-and-verification-design.md) defines production behavior, transitions, accessibility requirements, and review exercises. Some production flows (editable crop regions, admission, OS permissions, durable queues, secret storage) are specified but simulated here.
 

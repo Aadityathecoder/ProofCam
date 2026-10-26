@@ -19,7 +19,7 @@ def run(out,parent_plan):
               'candidate_code_sha256':h.digest(Path(d.__file__).read_bytes()),'baseline_helper_sha256':plan['baseline_helper_sha256'],
               'runner_sha256':h.digest(Path(__file__).read_bytes()),'source_ids':[s['id'] for s in sources],
               'transforms':TRANSFORMS,'device':plan['device'],'environment':h.environment(),
-              'limitations':['Tuning resolution variants, not new independent sources','Original variants remain visually/rights unapproved','Only five explicitly listed conditions','No physical Android or screenshot evidence','Desktop timing is diagnostic; concurrent local work']}
+              'limitations':['Tuning resolution variants, not new independent sources','Original variants remain visually/rights unapproved','Only five explicitly listed conditions','No physical iPhone or screenshot evidence','Desktop timing is diagnostic; concurrent local work']}
     h.dump(out/'plan.json',run_plan)
     for source in sources:
         path=h.safe_media_path(source['path'])
@@ -39,7 +39,7 @@ def run(out,parent_plan):
         print('Native probe:',source['id'],flush=True)
     for filename,rows in [('cases',cases),('predictions',predictions),('quality',qualities),('exports',exports)]:
         (out/(filename+'.jsonl')).write_text(''.join(json.dumps(row,sort_keys=True)+'\n' for row in rows))
-    report=h.score(cases,predictions);report.update(run_plan);report['source_count']=len(sources);report['actual_screenshots']=0;report['android_measurements']=0
+    report=h.score(cases,predictions);report.update(run_plan);report['source_count']=len(sources);report['actual_screenshots']=0;report['ios_measurements']=0
     report['cases_sha256']=h.digest((out/'cases.jsonl').read_bytes());report['predictions_sha256']=h.digest((out/'predictions.jsonl').read_bytes())
     h.dump(out/'score.json',report)
 

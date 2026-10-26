@@ -1,6 +1,5 @@
 {
   "actual_screenshots": 0,
-  "android_measurements": 0,
   "baseline_helper_sha256": "256a8e29dd6b5443787b9c9017aa6d7ecfb8a144e71070584b14c8015b6cbc08",
   "candidate_code_sha256": "1d461f187734d496ea767db92ec2a2aeb62179a39d69ae0a0cd5fae47b5cd113",
   "comparison_plan_sha256": "3fbf878ee492879f2dbaeb042b9e2f605e969b141953edb310069f3f85bf4470",
@@ -26,7 +25,7 @@
     "Unapproved rights and negative eligibility",
     "Only native/1024-edge scale and exact uniform-border search; no crop or rotation registration",
     "CRC is error detection, not authentication; copied/forged payloads remain possible",
-    "Desktop wall time includes Python/Pillow; not Android cost",
+    "Desktop wall time includes Python/Pillow; not iPhone cost",
     "Peak memory not measured"
   ],
   "negative_sources": [

@@ -1,5 +1,5 @@
 {
-  "scope": "Installed research dependencies; metadata and license-file inventory, not a patent clearance or Android distribution sign-off.",
+  "scope": "Installed research dependencies; metadata and license-file inventory, not a patent clearance or iPhone distribution sign-off.",
   "project_code": "New ProofCam research implementation. Repository-wide outbound license is not declared.",
   "models": "No learned models or weights.",
   "packages": [

@@ -1,6 +1,6 @@
 # Step 6: Desktop conclusion and device blocker
 
-Date: September 26, 2026. **Local deliverables complete; step 6 remains blocked on physical-device validation.** The user confirmed that no Android phone is available. No physical phone results, genuine screenshots, or mobile memory/latency qualification have been inferred from desktop work.
+Date: September 26, 2026. **Local deliverables complete; step 6 remains blocked on physical-device validation.** No physical phone results, genuine screenshots, or mobile memory/latency qualification have been inferred from desktop work.
 
 ## Decision
 
@@ -17,12 +17,10 @@ The desktop study is concluded at this configuration. A future experiment would 
 | High-resolution probe | Nine original-resolution variants, five conditions each: 45 additional cases; same source families, not nine independent new subjects |
 | Payload/coding | Full 128-bit public test ID + 16-bit experimental marker + 32-bit CRC; 176-bit repeated frame; majority voting is the only correction; no production issuer-routing field |
 | Image quality | Mean RGB SSIM 0.99022, fifth percentile 0.98294 over the 91 successfully prepared pairs; one missing pair is explicitly excluded from quality and retained as failure in recovery |
-| Native Android implementation | Installable offline research APK built; signature verified; no requested permissions; Android lint has zero errors and four warnings |
-| Cross-language core checks | Full-ID extraction in both directions on three raw-RGB fixtures; midpoint-rounding differences recorded; no claim of byte-identical images or Android runtime validation |
-| Dependency/license inventory | Pinned Python dependency versions and bundled-license hashes retained; Android tooling versions pinned; outbound repository licensing and redistribution review remain pending |
-| Physical screenshots / mobile timing / peak memory | **Not measured: no phone available** |
+| Dependency/license inventory | Pinned Python dependency versions and bundled-license hashes retained; outbound repository licensing and redistribution review remain pending |
+| Physical screenshots / mobile timing / peak memory | **Not measured in this desktop study** |
 
-The [expanded summary](../benchmark/reports/step06-desktop-final/summary.json) and adjacent cases/predictions/quality/score files preserve the evidence. Tests pass: 40 Python unit tests, plus host-JVM core round trips and input guards. Build and parity details are in [Android build evidence](../benchmark/reports/step06-android-build.json) and [native core checks](../benchmark/reports/step06-native-parity.json).
+The [expanded summary](../benchmark/reports/step06-desktop-final/summary.json) and adjacent cases/predictions/quality/score files preserve the evidence. The desktop report records 40 passing Python unit tests.
 
 ## Recovery and exclusions
 
@@ -40,21 +38,11 @@ One positive source and six negative sources have unsupported ICC transformation
 
 The [high-resolution probe](../benchmark/reports/step06-native-resolution/score.json) preserves its separate cohort: original and JPEG-Q70 recovery were 9/9, but resize-to-1024 and both synthetic screenshot sizes were 0/9. The extractor's fixed 1024 recovery target does not restore the 2048 embedding geometry after downscaling. Do not combine variant and parent observations into independent confidence samples.
 
-Corpus rights/final eligibility remain pending from step 5. These are tuning measurements, not held-out release evaluation. Desktop timing was diagnostic with concurrent local build work; it is not a controlled speed comparison or Android cost evidence. The numerical quality results are not blinded display/artifact approval.
+Corpus rights/final eligibility remain pending from step 5. These are tuning measurements, not held-out release evaluation. Desktop timing was diagnostic with concurrent local build work; it is not a controlled speed comparison or iPhone cost evidence. The numerical quality results are not blinded display/artifact approval.
 
-## Android test package
+## Physical-device validation
 
-The [research app](../android-benchmark/README.md) is ready to install later on Android 14+. It implements photo selection, local benchmark iterations, marked-JPEG export, automatic or manually selected screenshot-region extraction, and JSON evidence export. It has no camera, network, certificate, or registration functionality.
-
-Its candidate is deliberately named `android-qim12-bilinear-v1`: Android's image codecs/resampler and Java floating-point behavior differ from the desktop pipeline. Device qualification cannot inherit the Python scores. The APK records its own hash alongside device/build metadata, input/export/screenshot hashes, expected ID, attempts, and outcomes. Screenshots remain operator-attested. Hashing always covers the complete selected screenshot, including when a region is supplied for recovery.
-
-The app's heap/PSS values are post-iteration samples, not incremental peak memory. Proper device profiling is still required. The UI and Android-specific code have not been executed on a device or emulator. APK construction and signature verification are not functional device tests.
-
-## What unblocks completion
-
-Access to an existing or freely borrowed Android 14+ phone is needed to execute the prepared protocol: verify app behavior, collect actual OS screenshots with viewer/version/scale and media-rectangle metadata, retain original files, measure native latency, profile peak memory, and review artifacts on the display. Record exact model/SKU, OS build/security patch, and APK hash; report unsupported and failed conditions.
-
-Until that evidence exists, the original step 6 completion criterion is unmet. The roadmap says **Blocked — device unavailable**, while the desktop deliverables are complete. No purchase, paid service, fabricated evidence, or automatic narrowing of the product requirements is introduced.
+The [iPhone research app](../ios-benchmark/README.md) is the device experiment. Run the Mac validation procedure, then collect actual screenshots, native latency, peak memory and visual review on the available iPhone. Record hardware, OS build, app revision and signing configuration. Host simulations do not qualify the device or select a production watermark.
 
 ## Reproduce the local study
 

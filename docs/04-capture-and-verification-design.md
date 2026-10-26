@@ -15,7 +15,7 @@ A photo detail screen distinguishes three independent facts:
 
 - **Photo:** processing, ready, recovery needed, or deleted locally.
 - **Registration:** not requested, awaiting enrollment, pending, registered, rejected, or removal pending/removed.
-- **Sharing:** an action on a ready export; not a registration transition. Android reporting that a share target opened does not prove delivery.
+- **Sharing:** an action on a ready export; not a registration transition. iPhone reporting that a share target opened does not prove delivery.
 
 No full-screen “verified” celebration, authenticity score, or global green screen. Positive color is confined to a content-match result when issuer trust and signature checks also qualify.
 
@@ -29,7 +29,7 @@ No full-screen “verified” celebration, authenticity score, or global green s
 | S04 | Processing | “Preparing your photo”; named stages: preparing export, checking saved photo, signing; progress where measurable | Do not fabricate percentage; “Pause processing” preserves recoverable data, hides sharing until ready, and offers Resume in Library |
 | S05 | Photo detail | Photo preview; photo/registration rows; actual capture checks; “Share original”, “Verify this photo”, and overflow management | Show pending status near Share; controls depend on durable state, not optimistic animation |
 | S06 | Library | Local photo cards and explicit status chips; empty state “Your captures will appear here” | Interrupted items say “Needs recovery”; local deletion does not imply public removal |
-| S07 | Verify entry | “Check a photo”; “The photo is checked on your device. Record lookup sends its ID to the service.” Actions: “Choose photo”, “Import receipt” | Android picker/share intent, JPEG/PNG only; importing a receipt does not import a recovery credential |
+| S07 | Verify entry | “Check a photo”; “The photo is checked on your device. Record lookup sends its ID to the service.” Actions: “Choose photo”, “Import receipt” | iPhone file picker/share sheet, JPEG/PNG only; importing a receipt does not import a recovery credential |
 | S08 | Verification progress | “Checking this photo”; stages: reading file, recovering ID, looking up record, checking signature/trust, comparing content | Cancel stops work and returns to entry; timeout/error never becomes mismatch or success |
 | S09 | Verification result | Summary plus five independent rows: record signature, issuer status, content, capture checks, availability | Always show failed, unavailable, and stale states in words; details identify trust policy and evidence time scope |
 | S10 | Screenshot region | “Select the photo inside this screenshot”; bounded movable region; “Retry selected region”, “Cancel” | Crop is an extraction aid only. Hash/compare the original supplied asset, never relabel a matching selected crop as a full-file/full-image match |
@@ -40,7 +40,7 @@ No full-screen “verified” celebration, authenticity score, or global green s
 | S15 | Recovery settings | “Save management recovery”; “Anyone with this recovery file can manage removal of your records. It cannot restore photos or your capture signing key.” | Separate export/import from public receipts; explicit system-document destination; no secret shown in logs, previews, or ordinary share flow |
 | S16 | Registration recovery | Show expired-challenge/service failure with “Keep pending”, “Register with fewer capture checks”, or “Retake photo” where policy permits | Reduced claim requires an explicit choice and new signed request; never offered for rejected security evidence |
 
-The prototype demonstrates these screens with synthetic states. The production camera view, Android permission/picker/share dialogs, real crop manipulation, invitations, secret export, and disk operations are specified here but intentionally simulated in the prototype.
+The prototype demonstrates these screens with synthetic states. The production camera view, iPhone permission/picker/share dialogs, real crop manipulation, invitations, secret export, and disk operations are specified here but intentionally simulated in the prototype.
 
 ## Lifecycle diagrams
 
@@ -73,7 +73,7 @@ flowchart TD
     D -->|Yes| F[Show registered status]
     E --> G[Explain destination may change the file]
     F --> G
-    G --> H[Open Android share sheet with immutable export]
+    G --> H[Open iPhone share sheet with immutable export]
     H --> I[Return to photo; registration state unchanged]
 ```
 
@@ -124,7 +124,7 @@ Capture-check detail lists passed checks plus explicit unavailable/failed explan
 
 | Event | User-facing behavior | State/action |
 | --- | --- | --- |
-| Camera permission denied | “Camera access is off. You can still verify photos.” | Enable camera / Open Android settings if permanently denied; no permission loop |
+| Camera permission denied | “Camera access is off. You can still verify photos.” | Enable camera / Open iPhone settings if permanently denied; no permission loop |
 | First launch offline or no invitation | “Photos can be saved locally. Registration needs setup and a connection.” | Capture remains available; verify locally/import receipt remains available |
 | Storage insufficient before shutter | “Not enough space to safely save a photo.” | Disable capture; retry after user frees space; never delete library automatically |
 | Storage failure during processing | “Photo needs recovery. Free space and try again.” | Preserve recoverable data; no Share/Ready state until checks pass |

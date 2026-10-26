@@ -5,7 +5,7 @@ Status: Working product baseline established; implementation and external valida
 
 ## Product decision
 
-Build an Android photo pilot for journalists and field documenters who share original photographs with editors or reviewers. A recipient should be able to determine whether a supplied photo exactly matches a registered export, inspect the signed record, and understand which capture checks passed.
+Build an iPhone photo pilot for journalists and field documenters who share original photographs with editors or reviewers. A recipient should be able to determine whether a supplied photo exactly matches a registered export, inspect the signed record, and understand which capture checks passed.
 
 The product addresses a specific problem: recipients often receive photos separated from their capture context, with removable metadata or transformations introduced by sharing tools. ProofCam binds the final exported photo to a signed record and attempts to recover that record's identifier from supported transformed copies.
 
@@ -15,11 +15,11 @@ The signed baseline starts after watermarking and final encoding. It does not es
 
 | Role | Context | Need |
 | --- | --- | --- |
-| Primary: field journalist or documenter | Captures photos on Android, sometimes without reliable connectivity | Save and share a photo without losing track of registration or its original export |
+| Primary: field journalist or documenter | Captures photos on iPhone, sometimes without reliable connectivity | Save and share a photo without losing track of registration or its original export |
 | Secondary: editor or reviewer | Receives an original or a copy through a sharing channel | Check an exact match and understand the limits of the capture evidence |
 | Pilot operator | Supports a small cohort and investigates failures | See registration and service health without collecting participants' media by default |
 
-Recruit a small, invitation-only pilot representing both capture and review roles. Android reviewers use the app's verifier initially. Browser verification is deferred, and this constraint must be explicit during recruitment. At least ten reviewers participate in the comprehension check.
+Recruit a small, invitation-only pilot representing both capture and review roles. iPhone reviewers use the app's verifier initially. Browser verification is deferred, and this constraint must be explicit during recruitment. At least ten reviewers participate in the comprehension check.
 
 Insurance adjudication, legal evidence workflows, mass consumer distribution, and manufacturer-certified sensor provenance are outside this initial product definition. Those audiences require separate research and acceptance criteria.
 
@@ -32,7 +32,7 @@ Insurance adjudication, legal evidence workflows, mass consumer distribution, an
 3. The user takes a photo. The app normalizes rendering, embeds the identifier, encodes the JPEG, and checks the stored final export.
 4. The app signs the request locally and registers it with the service.
 5. After durable server acknowledgement, the app shows “Registered” and stores the signed receipt.
-6. The user shares the immutable original through the Android share sheet. Explain that a destination may transform it; do not imply that every destination's behavior can be detected.
+6. The user shares the immutable original through the iPhone share sheet. Explain that a destination may transform it; do not imply that every destination's behavior can be detected.
 
 Success: the reviewer receives the original and independently obtains a trusted, valid record and an exact-file match.
 
@@ -98,7 +98,7 @@ Do not use a generic “real,” “AI-free,” “authentic scene,” or “ver
 
 ## Pilot success metrics
 
-These are acceptance targets, not measured results. Technical targets come from the engineering specification and are evaluated at later roadmap gates.
+These are acceptance targets, not measured results. Technical targets below are carried forward as planning requirements and evaluated at later gates.
 
 | Measure | Pilot target | Evidence |
 | --- | --- | --- |
@@ -118,16 +118,16 @@ Product observations such as time to first successful capture, reviewer completi
 
 ## Working scope and boundaries
 
-The pilot includes Android in-app JPEG capture, an invisible public record identifier, strict file/pixel integrity checks, signed records, local Android verification, offline queuing, safe sharing, and record management/recovery. Location is off by default; capture and public verification do not require a user account. Installation enrollment still supports authenticated issuance.
+The pilot includes iPhone in-app JPEG capture, an invisible public record identifier, strict file/pixel integrity checks, signed records, local iPhone verification, offline queuing, safe sharing, and record management/recovery. Location is off by default; capture and public verification do not require a user account. Installation enrollment still supports authenticated issuance.
 
 Conventional watermarking is evaluated first. Learned watermark models are considered only if measured benefit justifies their cost and complexity. No model, payload redesign, device list, or robustness promise is selected by this brief.
 
-iPhone, video/audio, browser verification, authenticated video excerpts, editing/derivative records, and manufacturer integration are deferred. This is a staged pilot, not completion of the original specification's full first-release scope.
+Video/audio, browser verification, authenticated video excerpts, editing/derivative records, and manufacturer integration are deferred. This is a staged pilot, not completion of the broader product scope.
 
 ## Step 1 completion and next decisions
 
 The pilot audience, product problem, four core journeys, claim vocabulary, success metrics, and success/failure examples are established above as the project's working baseline. They are product decisions made under the request to proceed, not claims of stakeholder research or security validation.
 
-Step 2 must name reference devices, minimum Android support, accountable owners, free-resource constraints, and the detailed pilot scope. Subsequent gates determine feasibility, threat/assurance policy details, protocol formats, and implementation. No spending, deployment, or release date is authorized or promised by this document.
+Step 2 must name reference devices, minimum iPhone support, accountable owners, free-resource constraints, and the detailed pilot scope. Subsequent gates determine feasibility, threat/assurance policy details, protocol formats, and implementation. No spending, deployment, or release date is authorized or promised by this document.
 
 The no-cost constraint and revised device/distribution scope in [step 2](02-pilot-scope-and-free-development.md) govern implementation. No paid hardware, compute, hosting, datasets, or store enrollment is planned.

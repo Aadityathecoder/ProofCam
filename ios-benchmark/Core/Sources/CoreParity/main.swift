@@ -17,7 +17,7 @@ for line in try String(contentsOf: directory.appendingPathComponent("jobs.tsv"),
     let parts = line.split(separator: "\t").map(String.init)
     guard parts.count == 2 else { throw ResearchError.invalidID }
     let name = parts[0], id = parts[1]
-    for suffix in ["-python", "-java"] {
+    for suffix in ["-python"] {
         guard try DCTCore.extract(read(name+suffix+".rgb")) == id else { fatalError("Cross-decoder mismatch: \(name)\(suffix)") }
     }
     let marked = try DCTCore.embed(read(name+".rgb"), id: id)
@@ -26,5 +26,5 @@ for line in try String(contentsOf: directory.appendingPathComponent("jobs.tsv"),
     for value in [marked.width, marked.height] { for shift in [24,16,8,0] { output.append(UInt8((value >> shift)&255)) } }
     for p in marked.pixels { for shift in [16,8,0] { output.append(UInt8((p >> shift)&255)) } }
     try output.write(to: directory.appendingPathComponent(name+"-swift.rgb"))
-    print("PASS \(name): Python/Java → Swift; Swift round trip")
+    print("PASS \(name): Python → Swift; Swift round trip")
 }

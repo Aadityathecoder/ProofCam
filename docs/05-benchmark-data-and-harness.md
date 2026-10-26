@@ -34,14 +34,14 @@ Once candidate code, weights, payload/ECC, thresholds, and search limits are fro
 | Tuning separation | 100 sources, author-disjoint from held-out and negative pools | Locked source/author/byte checks; near-duplicate review |
 | Negative inputs | 10,100 natural-source candidates downloaded; 300,000 correlated stress recipes pinned for the 10,000-source expansion; 120 generated/checked | Validate unmarked status, distinct-byte counts and source diversity before final QA3; no pooled independent-sample bound from correlated variants |
 | Native 2048-pixel cases | 53 original-resolution variants verified against upstream version digests; two tuning originals exercised across 58 cases | Expand resolution coverage if the final matrix needs more sources; source CDN throttling/failed URLs are recorded; never upscale to manufacture eligibility |
-| Real screenshots | No physical evidence collected; strict importer implemented and tested | Actual Android/iPhone/desktop screenshot files linked to parent watermarked exports, with device/app/scale/media-size metadata |
+| Real screenshots | No physical evidence collected; strict importer implemented and tested | Actual iPhone/desktop screenshot files linked to parent watermarked exports, with device/app/scale/media-size metadata |
 | Automatic and manual region selection | Only synthetic screen/crop plumbing available | Separate measured automatic-region success and recovery after actual region selection |
 | Real combined edits | Synthetic chain implemented only | Actual screenshot → 75% crop → 1024 resize → pinned Q70 pipeline |
-| Android timing and memory | No available physical device run yet | Exact device/OS/app/runtime records; p95 finalization/search, peak memory, energy/thermal observations |
+| iPhone timing and memory | No available physical device run yet | Exact device/OS/app/runtime records; p95 finalization/search, peak memory, energy/thermal observations |
 | Candidate quality and recovery | No candidate implemented in goal 5 | Goal 6 exports, blinded quality review, complete decoder search results |
 | Wrong lookup / false cryptographic acceptance | Not measured by this image harness | Protocol/verifier adversarial tests in later implementation and QA goals |
 
-The original screenshot target includes screenshots produced on non-Android devices even though the first app is Android. Use freely available or borrowed display devices; do not synthesize evidence or buy hardware. If a device category remains unavailable, explicitly narrow the published support envelope before release rather than implying it was tested.
+The screenshot target includes iPhone and desktop viewer screenshots. Use freely available or borrowed display devices; do not synthesize evidence or buy hardware. If a device category remains unavailable, explicitly narrow the published support envelope before release rather than implying it was tested.
 
 ## Reproducibility and interpretation
 

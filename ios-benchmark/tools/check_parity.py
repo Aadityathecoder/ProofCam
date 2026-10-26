@@ -1,4 +1,4 @@
-"""Run after Android host fixtures exist; accepts the built CoreParity executable."""
+"""Run after prepare_parity_fixtures.py; accepts the built CoreParity executable."""
 import hashlib
 import json
 import platform
@@ -31,7 +31,7 @@ for row in (folder/'jobs.tsv').read_text().splitlines():
     for y,x in blocks:
         value = float(coeff[y,x,1,2])/12
         assert abs(value-round(value)) < 1e-4 and round(value)%2 != int(bits[(y*(image.width//8)+x)%base.FRAME_BITS])
-    results.append(dict(fixture=name, swift_to_python=True, python_to_swift=True, java_to_swift=True, swift_roundtrip=True, maximum_channel_difference=int(difference.max()), midpoint_blocks=len(blocks)))
+    results.append(dict(fixture=name, swift_to_python=True, python_to_swift=True, swift_roundtrip=True, maximum_channel_difference=int(difference.max()), midpoint_blocks=len(blocks)))
 report = dict(host_platform=platform.platform(), status='host_swift_parity_passed_not_ios_validation', fixtures=results,
     source_sha256={str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted((ROOT/'ios-benchmark').rglob('*.swift'))},
     limitations=['Host core check only; no Apple SDK build or physical iPhone execution', 'Raw RGB only; Apple JPEG, orientation, UI and performance untested', 'Three fixtures, not a robustness study; midpoint rounding differs from Python'])

@@ -45,11 +45,11 @@ def run(out, limit):
             'selection': 'First N sorted primary-photo tuning candidates; all 100 starter negative candidates',
             'positive_sources': [r['id'] for r in positives], 'negative_sources': [r['id'] for r in negatives],
             'test_ids': identifiers, 'transforms': h.transforms(), 'device': device,
-            'actual_screenshots': 0, 'android_measurements': 0,
+            'actual_screenshots': 0,
             'limitations': ['Tuning results; not held-out validation', 'Unapproved rights and negative eligibility',
                            'Only native/1024-edge scale and exact uniform-border search; no crop or rotation registration',
                            'CRC is error detection, not authentication; copied/forged payloads remain possible',
-                           'Desktop wall time includes Python/Pillow; not Android cost', 'Peak memory not measured']}
+                           'Desktop wall time includes Python/Pillow; not iPhone cost', 'Peak memory not measured']}
     h.dump(out / 'plan.json', plan)
     for candidate in d.CONFIGS:
         folder = out / candidate; folder.mkdir()
@@ -108,7 +108,7 @@ def run(out, limit):
                       cases_sha256=h.digest((folder / 'cases.jsonl').read_bytes()),
                       predictions_sha256=h.digest((folder / 'predictions.jsonl').read_bytes()),
                       quality_sha256=h.digest((folder / 'quality.jsonl').read_bytes()),
-                      actual_screenshots=0, android_measurements=0,
+                      actual_screenshots=0,
                       quality={'n': len(qualities),
                                'ssim_min': min(r['ssim_rgb_gaussian11'] for r in qualities),
                                'ssim_median': float(np.median([r['ssim_rgb_gaussian11'] for r in qualities])),

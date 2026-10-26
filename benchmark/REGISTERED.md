@@ -28,9 +28,9 @@ The fixed 1024 target is a declared tuning assumption: all positive sources in t
 
 ## Evidence and interpretation
 
-The [v2 plan and results](reports/conventional-v2/comparison.json) retain all failures and per-transform/size buckets. Synthetic canvases stay synthetic; successful border removal must not be described as successful real Android screenshot recovery. Negative-source approval is still pending, and 100 negative sources do not establish the release false-positive target.
+The [v2 plan and results](reports/conventional-v2/comparison.json) retain all failures and per-transform/size buckets. Synthetic canvases stay synthetic; successful border removal must not be described as successful real iPhone screenshot recovery. Negative-source approval is still pending, and 100 negative sources do not establish the release false-positive target.
 
-All software dependencies remain those inventoried in [v1](reports/conventional-v1/dependency-license-inventory.json); no model, additional watermark package, or paid service was introduced. The repository's outbound-license decision and Android implementation remain pending. Desktop timings are not Android measurements. The local environment check found Java but no `adb` on PATH or at the default Windows Android SDK location; it does not establish whether the user owns or can borrow a suitable phone.
+All software dependencies remain those inventoried in [v1](reports/conventional-v1/dependency-license-inventory.json); no model, additional watermark package, or paid service was introduced. The repository's outbound-license decision and physical-device qualification remain pending. Desktop timings are not device measurements.
 
 The completed run pins BLAS/OpenMP to one thread and SciPy FFT workers to one. The earlier v1 run did not pin BLAS thread counts, so cross-version timing is descriptive rather than a controlled speed comparison. A preliminary v2 run was stopped before any candidate completed and is excluded from published results.
 
@@ -58,4 +58,4 @@ The gentler candidate is the more promising direction from this comparison: the 
 
 The first export and five transformed inputs per candidate reproduced byte-for-byte. Their decoded ID sets and complete attempt records also matched. All 40 automated tests pass. Per-bucket timings and source/input hashes remain in the detailed reports; any pooled timing statistic is descriptive only.
 
-Continue with crop/rotation synchronization and broader tuning coverage before freezing a candidate. Physical Android screenshot and cost evidence remain required. Step 6 stays **In progress**.
+Continue with crop/rotation synchronization and broader tuning coverage before freezing a candidate. Physical iPhone screenshot and cost evidence remain required. Physical iPhone validation remains pending; see the iPhone research app instructions.

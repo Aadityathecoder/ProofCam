@@ -9,7 +9,7 @@ This is a host validation record, not a claim that the app works in every situat
 | Portable Swift tests, Release | 19 passed | CRC known vector and payload corruption; valid/invalid IDs; RGB dimensions/alpha; exact minimum capacity; incomplete blocks; deterministic noise round trips; unmarked negatives; crops; resizing; border recovery; bounded search and conflicting IDs; JSON round trip; rectangle parsing; p95; short/oversized/error file reads |
 | Portable Swift tests, Debug | 19 passed | Same assertions with Debug compilation |
 | Existing Python suite | 40 passed | Existing benchmark/harness regression tests |
-| Cross-decoder fixtures | 3 passed | Python/Java to Swift, Swift to Python, Swift round trips; channel differences constrained to verified QIM midpoint locations |
+| Cross-decoder fixtures | 3 passed | Python to Swift (current checker); historical report also includes the retired third decoder, Swift to Python, Swift round trips; channel differences constrained to verified QIM midpoint locations |
 | App and Apple codec Swift parsing | Passed | Syntax only, not SDK type checking |
 | Xcode project consistency | Passed | Reproducible generator output, valid scheme XML, inclusion of all app/core Swift sources |
 | Mac script syntax | Passed | Shell syntax only |
