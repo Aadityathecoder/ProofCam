@@ -11,11 +11,14 @@ struct SettingsScreen: View {
             Form {
                 Section {
                     HStack(spacing: 16) {
-                        ZStack { RoundedRectangle(cornerRadius: 14, style: .continuous).fill(ProofCamTheme.ink); ProofWorkshopIllustration(compact: true).padding(7) }
-                            .frame(width: 54, height: 54)
+                        Image(systemName: "viewfinder").font(.system(size: 25, weight: .medium))
+                            .foregroundStyle(ProofCamTheme.accent)
+                            .frame(width: 50, height: 50)
+                            .background(ProofCamTheme.background, in: RoundedRectangle(cornerRadius: 9))
+                            .overlay { RoundedRectangle(cornerRadius: 9).stroke(ProofCamTheme.border) }
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("The proof workshop").font(.system(.title3, design: .serif).weight(.bold))
-                            Text("Proof that travels with the photo.").font(.subheadline).foregroundStyle(.secondary)
+                            Text("ProofCam").font(.system(.title3, design: .default).weight(.bold))
+                            Text("Capture and image integrity").font(.subheadline).foregroundStyle(.secondary)
                         }
                     }.padding(.vertical, 8)
                 }
@@ -50,7 +53,7 @@ struct SettingsScreen: View {
                     Text("Built for people documenting the world: journalists, researchers, field teams, and anyone who wants a verifiable record of a saved photo.")
                         .font(.footnote).foregroundStyle(.secondary)
                 }
-            }.scrollContentBackground(.hidden).background(ProofCamTheme.canvas)
+            }.scrollContentBackground(.hidden).background(ProofCamTheme.background)
                 .navigationTitle("Settings").tint(ProofCamTheme.accent)
         }
         .sheet(isPresented: $showingGuide) { IntroductionScreen(completionTitle: "Done") { showingGuide = false } }
@@ -62,13 +65,13 @@ struct IntroductionScreen: View {
     let completed: () -> Void
     @State private var page = 0
     private let pages: [(symbol: String, eyebrow: String, title: String, body: String, note: String)] = [
-        ("camera", "01  CAPTURE", "Take the photo.",
+        ("camera", "01  CAPTURE", "Capture an original.",
          "ProofCam uses a real camera capture, then prepares one durable JPEG on your iPhone.",
-         "Nothing is uploaded. No account is required."),
-        ("lock.shield", "02  PROTECT", "The proof stays inside.",
+         "For journalists, researchers, and teams documenting their work. No account is required."),
+        ("lock.shield", "02  PROTECT", "A signature in every photo.",
          "A Secure Enclave key signs the image’s SHA-256 proof. That signed record is embedded directly in the JPEG.",
-         "Share one photo—not a photo plus a fragile sidecar file."),
-        ("checkmark.circle", "03  VERIFY", "Check for change.",
+         "Share the original JPEG to keep the image and its signature together."),
+        ("checkmark.circle", "03  VERIFY", "Verify image integrity.",
          "Anyone with the original can open Verify and check whether its embedded proof still matches.",
          "ProofCam confirms integrity. It does not claim that a photographed scene is truthful.")
     ]
@@ -83,13 +86,13 @@ struct IntroductionScreen: View {
                 ForEach(pages.indices, id: \.self) { index in
                     ScrollView {
                         VStack(alignment: .leading, spacing: 24) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 20, style: .continuous).fill(ProofCamTheme.paper)
-                                ProofWorkshopIllustration().padding(12)
-                            }.frame(height: 250).overlay { RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(ProofCamTheme.line) }
-                            WorkshopEyebrow(text: pages[index].eyebrow)
-                            Text(pages[index].title).font(.system(.largeTitle, design: .serif).weight(.bold)).tracking(-0.8).fixedSize(horizontal: false, vertical: true)
-                            Text(pages[index].body).font(.body).foregroundStyle(ProofCamTheme.ink.opacity(0.84)).fixedSize(horizontal: false, vertical: true)
+                            ProofDocumentIllustration(symbol: pages[index].symbol)
+                                .frame(height: 180)
+                                .background(ProofCamTheme.surface, in: RoundedRectangle(cornerRadius: 12))
+                                .overlay { RoundedRectangle(cornerRadius: 12).stroke(ProofCamTheme.border) }
+                            SectionLabel(text: pages[index].eyebrow)
+                            Text(pages[index].title).font(.system(.largeTitle).weight(.semibold)).tracking(-0.8).fixedSize(horizontal: false, vertical: true)
+                            Text(pages[index].body).font(.body).foregroundStyle(ProofCamTheme.text.opacity(0.84)).fixedSize(horizontal: false, vertical: true)
                             Text(pages[index].note).font(.subheadline).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                         }.frame(maxWidth: 500).padding(.horizontal, 28).padding(.bottom, 24)
                     }.tag(index)
@@ -98,7 +101,7 @@ struct IntroductionScreen: View {
             VStack(spacing: 20) {
                 HStack(spacing: 7) {
                     ForEach(pages.indices, id: \.self) { index in
-                        Capsule().fill(page == index ? ProofCamTheme.blue : Color.black.opacity(0.12)).frame(width: page == index ? 22 : 6, height: 6)
+                        Capsule().fill(page == index ? ProofCamTheme.accent : ProofCamTheme.border).frame(width: page == index ? 22 : 6, height: 6)
                     }
                 }.accessibilityLabel("Introduction page \(page + 1) of \(pages.count)")
                 Button {
@@ -107,11 +110,11 @@ struct IntroductionScreen: View {
                 } label: {
                     HStack { Spacer(); Text(page == pages.count - 1 ? completionTitle : "Continue").fontWeight(.semibold); Spacer(); Image(systemName: "arrow.right") }
                         .padding(.horizontal, 20).frame(maxWidth: .infinity, minHeight: 56)
-                        .background(ProofCamTheme.blue, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .background(ProofCamTheme.primary, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                         .foregroundStyle(.white)
                 }.buttonStyle(.plain)
                 Text("No account. Photos are processed on your device.").font(.caption2).foregroundStyle(.secondary)
             }.padding(.horizontal, 28).padding(.bottom, 24)
-        }.background(ProofCamTheme.canvas).foregroundStyle(ProofCamTheme.ink)
+        }.background(ProofCamTheme.background).foregroundStyle(ProofCamTheme.text)
     }
 }

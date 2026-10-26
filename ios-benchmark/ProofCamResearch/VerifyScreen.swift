@@ -97,40 +97,38 @@ struct VerifyScreen: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    HStack { ProofCamMark(); Spacer(); Text("FIELD NOTES  /  02").font(.system(size: 10, weight: .medium, design: .monospaced)).foregroundStyle(.secondary) }
+                    HStack { ProofCamMark(); Spacer(); Text("VERIFICATION").font(.system(size: 10, weight: .medium, design: .monospaced)).foregroundStyle(.secondary) }
                     VStack(alignment: .leading, spacing: 6) {
-                        WorkshopEyebrow(text: "Check the record")
-                        Text("Does it hold up?")
-                            .font(.system(.largeTitle, design: .serif).weight(.bold))
+                        SectionLabel(text: "Image integrity")
+                        Text("Verify a photo")
+                            .font(.system(.largeTitle).weight(.semibold))
                             .tracking(-0.8)
                         Text("Choose an original. Its signed proof is checked privately on this iPhone.")
-                            .font(.body).foregroundStyle(ProofCamTheme.ink.opacity(0.72)).fixedSize(horizontal: false, vertical: true)
+                            .font(.body).foregroundStyle(ProofCamTheme.text.opacity(0.72)).fixedSize(horizontal: false, vertical: true)
                     }
                     if let image = model.image {
                         Image(uiImage: image).resizable().scaledToFit().frame(maxWidth: .infinity, maxHeight: 310)
-                            .background(Color.black).clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                            .background(Color.black).clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                     } else {
-                        RoundedRectangle(cornerRadius: 18, style: .continuous).fill(ProofCamTheme.paper).frame(height: 200)
-                            .overlay {
-                                VStack(spacing: 4) {
-                                    ProofWorkshopIllustration(compact: true).frame(width: 175, height: 145)
-                                    Text("A photo, filed with care").font(.system(size: 13, weight: .medium, design: .serif)).foregroundStyle(ProofCamTheme.ink.opacity(0.7))
-                                }
-                            }
-                            .overlay { RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(ProofCamTheme.line) }
+                        VStack(spacing: 16) {
+                            Image(systemName: "doc.viewfinder").font(.system(size: 40, weight: .light)).foregroundStyle(ProofCamTheme.accent)
+                            Text("Select an original JPEG or PNG").font(.subheadline).foregroundStyle(.secondary)
+                        }.frame(maxWidth: .infinity).frame(height: 170)
+                            .background(ProofCamTheme.surface, in: RoundedRectangle(cornerRadius: 12))
+                            .overlay { RoundedRectangle(cornerRadius: 12).stroke(ProofCamTheme.border) }
                     }
                     VStack(alignment: .leading, spacing: 12) {
                         HStack(alignment: .top, spacing: 12) {
                             let failed = model.title == "Unable to verify" || model.title == "No matching signature found"
                             Image(systemName: model.verified ? "checkmark.circle.fill" : failed ? "exclamationmark.triangle.fill" : "info.circle.fill")
-                                .font(.title2).foregroundStyle(model.verified ? ProofCamTheme.success : failed ? ProofCamTheme.clay : ProofCamTheme.accent)
+                                .font(.title2).foregroundStyle(model.verified ? ProofCamTheme.success : failed ? ProofCamTheme.warning : ProofCamTheme.accent)
                             VStack(alignment: .leading, spacing: 5) {
-                                Text(model.title).font(.headline).foregroundStyle(ProofCamTheme.ink)
+                                Text(model.title).font(.headline).foregroundStyle(ProofCamTheme.text)
                                 Text(model.detail).font(.subheadline).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                             }
                         }
                         if model.proofIsEmbedded {
-                            Label("Embedded proof", systemImage: "shippingbox.fill")
+                            Label("Embedded proof", systemImage: "signature")
                                 .font(.caption.weight(.semibold)).foregroundStyle(ProofCamTheme.success)
                                 .padding(.horizontal, 10).padding(.vertical, 6)
                                 .background(ProofCamTheme.success.opacity(0.1), in: Capsule())
@@ -141,21 +139,21 @@ struct VerifyScreen: View {
                                 .font(.caption).foregroundStyle(.secondary)
                         }
                     }.padding(17).frame(maxWidth: .infinity, alignment: .leading)
-                        .background(ProofCamTheme.paper, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-                        .overlay { RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(ProofCamTheme.line) }
+                        .background(ProofCamTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                        .overlay { RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(ProofCamTheme.border) }
                     VStack(spacing: 12) {
                         PhotosPicker(selection: $selected, matching: .images, preferredItemEncoding: .current) {
                             Label("Choose from Photos", systemImage: "photo")
                                 .font(.body.weight(.semibold)).frame(maxWidth: .infinity, minHeight: 54)
                                 .foregroundStyle(.white)
-                                .background(ProofCamTheme.blue, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                                .background(ProofCamTheme.primary, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                         }.buttonStyle(.plain)
                         Button { signatureImport = false; importing = true } label: {
                             Label("Choose from Files", systemImage: "folder")
                                 .font(.body.weight(.medium)).frame(maxWidth: .infinity, minHeight: 54)
-                                .foregroundStyle(ProofCamTheme.ink)
-                                .background(ProofCamTheme.paper, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                                .overlay { RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(ProofCamTheme.line) }
+                                .foregroundStyle(ProofCamTheme.text)
+                                .background(ProofCamTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                                .overlay { RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(ProofCamTheme.border) }
                         }.buttonStyle(.plain)
                         Button("Use a separate proof file") { signatureImport = true; importing = true }.font(.subheadline).padding(.top, 2)
                         if model.hasImportedReceipt {
@@ -168,7 +166,7 @@ struct VerifyScreen: View {
                         Label("SHA-256", systemImage: "number")
                     }.font(.caption2.weight(.medium)).foregroundStyle(.secondary).frame(maxWidth: .infinity)
                 }.padding(.horizontal, 22).padding(.top, 18).padding(.bottom, 32)
-            }.background(ProofCamTheme.canvas).navigationBarHidden(true)
+            }.background(ProofCamTheme.background).navigationBarHidden(true)
         }
         .onChange(of: selected) { _, item in
             guard let item else { return }

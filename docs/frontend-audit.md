@@ -28,3 +28,9 @@ The redesign leaves `CaptureProvenance.swift`, `Core`, signing, receipt formats,
 - Actual simulator screenshots are in `screenshots/`.
 - Existing Core package suite: 54 tests executed, 4 optional fixture/diagnostic tests skipped, 0 failures.
 - The Simulator correctly reports that the camera preview needs a physical iPhone. No physical-device capture/signing, App Attest qualification, large Dynamic Type pass, or compact-iPhone pass was performed. The simulator screenshots do not depict an operational camera preview.
+
+## Professional visual refresh — October 26, 2026
+
+The warm workshop direction above has been replaced by the palette and components in `DESIGN.md`: cool gray/white with navy controls in light mode, charcoal/slate with steel-blue accents in dark mode. System sans-serif headlines replace serif display type. The archive-print illustration is replaced by a restrained photo/signature diagram; the Verify empty state uses a simple document-viewfinder symbol. Button and panel corners are reduced and copy is more direct.
+
+The Release app target builds for the arm64 iOS simulator. This revision changes view composition, visual tokens, and display copy only; no cryptographic or persistence source was modified. Historical screenshots above depict the preceding visual design.

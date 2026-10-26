@@ -4,33 +4,34 @@ import UIKit
 import CryptoKit
 
 enum ProofCamTheme {
-    static let ink = Color(uiColor: UIColor { $0.userInterfaceStyle == .dark ? UIColor(red: 0.92, green: 0.90, blue: 0.83, alpha: 1) : UIColor(red: 0.12, green: 0.16, blue: 0.14, alpha: 1) })
-    static let blue = Color(red: 0.30, green: 0.39, blue: 0.31)
-    static let canvas = Color(uiColor: UIColor { $0.userInterfaceStyle == .dark ? UIColor(red: 0.10, green: 0.12, blue: 0.11, alpha: 1) : UIColor(red: 0.95, green: 0.93, blue: 0.87, alpha: 1) })
-    static let line = Color(uiColor: UIColor { $0.userInterfaceStyle == .dark ? UIColor.white.withAlphaComponent(0.17) : UIColor(red: 0.26, green: 0.25, blue: 0.20, alpha: 0.16) })
-    static let accent = Color(uiColor: UIColor { $0.userInterfaceStyle == .dark ? UIColor(red: 0.69, green: 0.79, blue: 0.62, alpha: 1) : UIColor(red: 0.30, green: 0.39, blue: 0.31, alpha: 1) })
-    static let success = Color(uiColor: UIColor { $0.userInterfaceStyle == .dark ? UIColor(red: 0.58, green: 0.78, blue: 0.62, alpha: 1) : UIColor(red: 0.22, green: 0.39, blue: 0.29, alpha: 1) })
-    static let paper = Color(uiColor: UIColor { $0.userInterfaceStyle == .dark ? UIColor(red: 0.16, green: 0.18, blue: 0.16, alpha: 1) : UIColor(red: 0.99, green: 0.98, blue: 0.94, alpha: 1) })
-    static let illustrationPaper = Color(red: 0.99, green: 0.98, blue: 0.94)
-    static let clay = Color(red: 0.74, green: 0.37, blue: 0.24)
-    static let straw = Color(red: 0.83, green: 0.69, blue: 0.40)
+    private static func adaptive(_ light: UInt32, _ dark: UInt32) -> Color {
+        Color(uiColor: UIColor { traits in
+            let hex = traits.userInterfaceStyle == .dark ? dark : light
+            return UIColor(red: CGFloat((hex >> 16) & 255) / 255,
+                           green: CGFloat((hex >> 8) & 255) / 255,
+                           blue: CGFloat(hex & 255) / 255, alpha: 1)
+        })
+    }
+    static let text = adaptive(0x18212D, 0xE6EBF2)
+    static let primary = adaptive(0x233F60, 0x304F73)
+    static let background = adaptive(0xF2F4F7, 0x0D131C)
+    static let surface = adaptive(0xFFFFFF, 0x17212E)
+    static let border = adaptive(0xD9DFE7, 0x303D4D)
+    static let accent = adaptive(0x264C77, 0xA6C2E2)
+    static let success = adaptive(0x216E51, 0x8CC7AC)
+    static let warning = adaptive(0xA14B27, 0xE1A27E)
 }
 
 struct ProofCamMark: View {
     var light = false
     var body: some View {
-        HStack(spacing: 8) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(light ? ProofCamTheme.paper : ProofCamTheme.ink)
-                    .frame(width: 30, height: 30)
-                    .overlay {
-                        Image(systemName: "viewfinder")
-                            .font(.system(size: 17, weight: .medium))
-                            .foregroundStyle(light ? ProofCamTheme.ink : ProofCamTheme.paper)
-                    }
-            }
-            Text("proofcam").font(.system(size: 17, weight: .semibold, design: .serif)).tracking(-0.5)
+        HStack(spacing: 9) {
+            Image(systemName: "viewfinder")
+                .font(.system(size: 18, weight: .medium))
+                .foregroundStyle(light ? Color.white : ProofCamTheme.text)
+                .frame(width: 30, height: 30)
+                .overlay { RoundedRectangle(cornerRadius: 6).stroke(light ? Color.white.opacity(0.3) : ProofCamTheme.border) }
+            Text("ProofCam").font(.system(size: 18, weight: .semibold)).tracking(-0.4)
         }
     }
 }
@@ -234,12 +235,12 @@ struct CaptureScreen: View {
                 HStack {
                     Button { camera.flash.toggle() } label: {
                         Image(systemName: camera.flash ? "bolt.fill" : "bolt.slash")
-                            .foregroundStyle(camera.flash ? ProofCamTheme.clay : ProofCamTheme.ink.opacity(0.75)).frame(width: 44, height: 44)
+                            .foregroundStyle(camera.flash ? ProofCamTheme.warning : ProofCamTheme.text.opacity(0.75)).frame(width: 44, height: 44)
                     }.disabled(!camera.hasFlash || working).accessibilityLabel(camera.flash ? "Turn flash off" : "Turn flash on")
                     Spacer()
                     ProofCamMark()
                     Spacer()
-                    Text("4:3").font(.system(size: 13, weight: .medium, design: .rounded)).foregroundStyle(ProofCamTheme.ink.opacity(0.72)).frame(width: 44, height: 44)
+                    Text("4:3").font(.system(size: 13, weight: .medium, design: .default)).foregroundStyle(ProofCamTheme.text.opacity(0.72)).frame(width: 44, height: 44)
                         .accessibilityLabel("Photo aspect ratio, four by three")
                 }.padding(.horizontal, 14).frame(height: 48)
                 ZStack {
@@ -263,7 +264,7 @@ struct CaptureScreen: View {
                             Text(camera.message ?? "Opening camera…").font(.callout).multilineTextAlignment(.center)
                             if AVCaptureDevice.authorizationStatus(for: .video) == .denied {
                                 Button("Open Settings") { if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) } }
-                                    .tint(.yellow)
+                                    .tint(ProofCamTheme.accent)
                             }
                         }.foregroundStyle(.white.opacity(0.7)).padding(32)
                     }
@@ -282,20 +283,20 @@ struct CaptureScreen: View {
                     }
                 }
                 .frame(height: min(geometry.size.width * 4 / 3, max(220, geometry.size.height - 225)))
-                .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .padding(.horizontal, 12)
                 .clipped()
                 VStack(spacing: 15) {
                     Label(captureReadinessLabel, systemImage: "lock.fill")
-                        .font(.system(size: 10, weight: .bold, design: .rounded)).tracking(1.1).foregroundStyle(ProofCamTheme.accent)
+                        .font(.system(size: 10, weight: .bold, design: .default)).tracking(1.1).foregroundStyle(ProofCamTheme.accent)
                     HStack {
                         Button { library = true } label: {
                             Group {
                                 if let latest = provenance.pending.first, let image = UIImage(contentsOfFile: latest.jpeg.path) {
                                     Image(uiImage: image).resizable().scaledToFill()
-                                } else { Image(systemName: "photo.on.rectangle").font(.title2).foregroundStyle(ProofCamTheme.ink.opacity(0.7)) }
-                            }.frame(width: 50, height: 50).background(ProofCamTheme.paper).clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                                .overlay { RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(ProofCamTheme.line) }
+                                } else { Image(systemName: "photo.on.rectangle").font(.title2).foregroundStyle(ProofCamTheme.text.opacity(0.7)) }
+                            }.frame(width: 50, height: 50).background(ProofCamTheme.surface).clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                .overlay { RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(ProofCamTheme.border) }
                         }.accessibilityLabel("View captured photos")
                         Spacer()
                         Button {
@@ -303,23 +304,23 @@ struct CaptureScreen: View {
                             camera.takePhoto { provenance.captured($0) }
                         } label: {
                             ZStack {
-                                Circle().stroke(ProofCamTheme.ink, lineWidth: 3).frame(width: 76, height: 76)
-                                Circle().fill(ProofCamTheme.blue.opacity(canCapture ? 1 : 0.38)).frame(width: 62, height: 62)
-                                if working { ProgressView().tint(.black) }
+                                Circle().stroke(ProofCamTheme.text, lineWidth: 3).frame(width: 76, height: 76)
+                                Circle().fill(ProofCamTheme.text.opacity(canCapture ? 1 : 0.38)).frame(width: 62, height: 62)
+                                if working { ProgressView().tint(ProofCamTheme.background) }
                             }
                         }.disabled(!canCapture).accessibilityLabel(working ? "Signing photo" : "Take signed photo")
                         Spacer()
                         Button { camera.switchCamera() } label: {
                             Image(systemName: "arrow.triangle.2.circlepath.camera").font(.system(size: 21))
-                                .foregroundStyle(ProofCamTheme.ink).frame(width: 50, height: 50).background(ProofCamTheme.paper, in: Circle())
-                                .overlay { Circle().stroke(ProofCamTheme.line) }
+                                .foregroundStyle(ProofCamTheme.text).frame(width: 50, height: 50).background(ProofCamTheme.surface, in: Circle())
+                                .overlay { Circle().stroke(ProofCamTheme.border) }
                         }.disabled(!camera.ready || working).accessibilityLabel("Switch camera")
                     }.padding(.horizontal, 30)
                     Text(working ? "Embedding proof and signing…" : "When capture completes, its proof stays inside the JPEG.")
-                        .font(.footnote).foregroundStyle(ProofCamTheme.ink.opacity(0.65)).multilineTextAlignment(.center)
+                        .font(.footnote).foregroundStyle(ProofCamTheme.text.opacity(0.65)).multilineTextAlignment(.center)
                 }.padding(.top, 15)
                 Spacer(minLength: 0)
-            }.foregroundStyle(ProofCamTheme.ink).background(ProofCamTheme.canvas)
+            }.foregroundStyle(ProofCamTheme.text).background(ProofCamTheme.background)
         }
         .task { if active { camera.start() } }
         .onChange(of: active) { _, value in if value && scenePhase == .active { camera.start() } else { camera.stop() } }
@@ -341,17 +342,17 @@ struct CaptureLibrary: View {
                 if provenance.pending.isEmpty {
                     VStack(spacing: 16) {
                         ZStack {
-                            RoundedRectangle(cornerRadius: 20, style: .continuous).fill(ProofCamTheme.paper)
-                            ProofWorkshopIllustration().padding(12)
-                        }.frame(height: 230)
-                        WorkshopEyebrow(text: "Your archive")
-                        Text("The first frame is still ahead.").font(.system(.title, design: .serif).weight(.bold)).multilineTextAlignment(.center)
+                            RoundedRectangle(cornerRadius: 12, style: .continuous).fill(ProofCamTheme.surface)
+                            ProofDocumentIllustration().padding(12)
+                        }.frame(height: 180)
+                        SectionLabel(text: "Photo library")
+                        Text("No captured photos").font(.system(.title, design: .default).weight(.bold)).multilineTextAlignment(.center)
                         Text("Signed photos you take with ProofCam will be kept here on this iPhone.")
                             .font(.body).foregroundStyle(.secondary).multilineTextAlignment(.center)
                     }.padding(24).padding(.top, 24)
                 } else {
                     VStack(alignment: .leading, spacing: 14) {
-                        WorkshopEyebrow(text: "Saved on this iPhone")
+                        SectionLabel(text: "Saved on this iPhone")
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 112), spacing: 10)], spacing: 10) {
                             ForEach(provenance.pending) { capture in
                                 NavigationLink { CaptureDetail(capture: capture, provenance: provenance) } label: {
@@ -360,7 +361,7 @@ struct CaptureLibrary: View {
                                             if let image = UIImage(contentsOfFile: capture.jpeg.path) {
                                                 Image(uiImage: image).resizable().scaledToFill()
                                             } else {
-                                                ProofCamTheme.ink.overlay(Image(systemName: "photo").foregroundStyle(ProofCamTheme.paper))
+                                                ProofCamTheme.text.overlay(Image(systemName: "photo").foregroundStyle(ProofCamTheme.surface))
                                             }
                                         }
                                         .frame(width: geometry.size.width, height: geometry.size.height).clipped()
@@ -382,7 +383,7 @@ struct CaptureLibrary: View {
                         }
                     }.padding(18)
                 }
-            }.background(ProofCamTheme.canvas).navigationTitle("Your photos").navigationBarTitleDisplayMode(.inline)
+            }.background(ProofCamTheme.background).navigationTitle("Your photos").navigationBarTitleDisplayMode(.inline)
                 .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Done") { dismiss() } } }
         }
     }
@@ -395,12 +396,12 @@ struct CaptureDetail: View {
             VStack(spacing: 22) {
                 if let image = UIImage(contentsOfFile: capture.jpeg.path) {
                     Image(uiImage: image).resizable().scaledToFit().frame(maxWidth: .infinity, maxHeight: 430)
-                        .background(ProofCamTheme.ink).clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .background(ProofCamTheme.text).clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
                 Label(capture.hasRequest ? "Signed on this iPhone" : "Signing incomplete", systemImage: capture.hasRequest ? "signature" : "exclamationmark.triangle")
-                    .font(.headline).foregroundStyle(capture.hasRequest ? ProofCamTheme.success : ProofCamTheme.clay)
+                    .font(.headline).foregroundStyle(capture.hasRequest ? ProofCamTheme.success : ProofCamTheme.warning)
                     .frame(maxWidth: .infinity, alignment: .leading).padding(16)
-                    .background(ProofCamTheme.paper, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .background(ProofCamTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                 if capture.hasRequest {
                     if !capture.savedToPhotos {
                         Button("Save to Photos") { Task { await provenance.saveToPhotos(capture) } }.buttonStyle(.borderedProminent).disabled(provenance.savingIDs.contains(capture.id))
@@ -416,77 +417,39 @@ struct CaptureDetail: View {
                         .font(.footnote).foregroundStyle(.secondary).multilineTextAlignment(.center).padding(.horizontal)
                 } else { Text("This photo was retained after an interrupted capture. It has not been saved to Photos as a signed image.").font(.footnote).foregroundStyle(.secondary) }
             }.padding(.horizontal, 18).padding(.top, 18).padding(.bottom, 24)
-        }.background(ProofCamTheme.canvas).navigationTitle(capture.createdAt.formatted(date: .abbreviated, time: .shortened)).navigationBarTitleDisplayMode(.inline)
+        }.background(ProofCamTheme.background).navigationTitle(capture.createdAt.formatted(date: .abbreviated, time: .shortened)).navigationBarTitleDisplayMode(.inline)
     }
 }
 
-/// A small original, vector-drawn still-life used as the workshop's visual signature.
-struct ProofWorkshopIllustration: View {
+/// A restrained representation of a photo and its accompanying signed record.
+struct ProofDocumentIllustration: View {
     var compact = false
+    var symbol = "photo"
     var body: some View {
-        GeometryReader { proxy in
-            let size = proxy.size
-            ZStack {
-                Circle().fill(ProofCamTheme.straw.opacity(0.42))
-                    .frame(width: size.height * 0.78, height: size.height * 0.78)
-                    .offset(x: size.width * 0.15, y: -size.height * 0.02)
-                Path { path in
-                    path.move(to: CGPoint(x: size.width * 0.08, y: size.height * 0.81))
-                    path.addQuadCurve(to: CGPoint(x: size.width * 0.93, y: size.height * 0.81),
-                                      control: CGPoint(x: size.width * 0.52, y: size.height * 0.70))
-                    path.addLine(to: CGPoint(x: size.width * 0.90, y: size.height * 0.93))
-                    path.addQuadCurve(to: CGPoint(x: size.width * 0.11, y: size.height * 0.93),
-                                      control: CGPoint(x: size.width * 0.48, y: size.height * 0.99))
-                    path.closeSubpath()
-                }.fill(ProofCamTheme.clay)
-                // A folded archive print: one corner lifts as if the photograph were freshly filed.
-                RoundedRectangle(cornerRadius: size.height * 0.045, style: .continuous)
-                    .fill(ProofCamTheme.illustrationPaper)
-                    .frame(width: size.width * 0.49, height: size.height * 0.63)
-                    .overlay(alignment: .top) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: size.height * 0.025, style: .continuous)
-                                .fill(Color(red: 0.74, green: 0.79, blue: 0.65))
-                                .frame(width: size.width * 0.40, height: size.height * 0.36)
-                            Path { path in
-                                path.move(to: CGPoint(x: size.width * 0.30, y: size.height * 0.50))
-                                path.addCurve(to: CGPoint(x: size.width * 0.65, y: size.height * 0.50),
-                                              control1: CGPoint(x: size.width * 0.39, y: size.height * 0.37),
-                                              control2: CGPoint(x: size.width * 0.51, y: size.height * 0.62))
-                            }.stroke(ProofCamTheme.blue.opacity(0.8), style: StrokeStyle(lineWidth: 2, lineCap: .round))
-                            Image(systemName: "sun.max.fill")
-                                .font(.system(size: size.height * 0.07))
-                                .foregroundStyle(ProofCamTheme.straw)
-                                .offset(x: size.width * 0.14, y: -size.height * 0.10)
-                        }.padding(.top, size.height * 0.045)
-                    }
-                    .overlay(alignment: .bottomLeading) {
-                        VStack(alignment: .leading, spacing: 3) {
-                            Capsule().fill(ProofCamTheme.ink.opacity(0.55)).frame(width: size.width * 0.20, height: 2)
-                            Capsule().fill(ProofCamTheme.ink.opacity(0.25)).frame(width: size.width * 0.14, height: 2)
-                        }.padding(.leading, size.width * 0.045).padding(.bottom, size.height * 0.055)
-                    }
-                    .overlay { RoundedRectangle(cornerRadius: size.height * 0.045).stroke(ProofCamTheme.ink.opacity(0.12), lineWidth: 1) }
-                    .rotationEffect(.degrees(-7))
-                    .offset(x: -size.width * 0.02, y: -size.height * 0.05)
-                if !compact {
-                    Image(systemName: "seal.fill")
-                        .font(.system(size: size.height * 0.22))
-                        .foregroundStyle(ProofCamTheme.blue)
-                        .overlay { Image(systemName: "checkmark").font(.system(size: size.height * 0.075, weight: .bold)).foregroundStyle(.white) }
-                        .rotationEffect(.degrees(12))
-                        .offset(x: size.width * 0.30, y: size.height * 0.30)
-                }
-            }.frame(maxWidth: .infinity, maxHeight: .infinity)
-                .accessibilityHidden(true)
-        }
+        HStack(spacing: compact ? 20 : 28) {
+            VStack(alignment: .leading, spacing: 12) {
+                Image(systemName: symbol).font(.system(size: compact ? 28 : 38, weight: .light))
+                    .foregroundStyle(ProofCamTheme.accent)
+                Text("ORIGINAL").font(.system(size: 9, weight: .semibold, design: .monospaced)).tracking(1)
+                    .foregroundStyle(.secondary)
+            }.frame(width: compact ? 82 : 108, height: compact ? 86 : 112)
+                .background(ProofCamTheme.surface, in: RoundedRectangle(cornerRadius: 8))
+                .overlay { RoundedRectangle(cornerRadius: 8).stroke(ProofCamTheme.border) }
+            Image(systemName: "link").font(.system(size: 17, weight: .regular)).foregroundStyle(ProofCamTheme.accent)
+            VStack(alignment: .leading, spacing: 10) {
+                Image(systemName: "signature").font(.system(size: compact ? 25 : 32, weight: .light))
+                Rectangle().fill(ProofCamTheme.border).frame(width: compact ? 40 : 60, height: 1)
+                Text("SIGNED").font(.system(size: 9, weight: .semibold, design: .monospaced)).tracking(1)
+                    .foregroundStyle(.secondary)
+            }.foregroundStyle(ProofCamTheme.text)
+        }.frame(maxWidth: .infinity, maxHeight: .infinity).accessibilityHidden(true)
     }
 }
 
-struct WorkshopEyebrow: View {
+struct SectionLabel: View {
     let text: String
     var body: some View {
-        Text(text.uppercased()).font(.system(size: 11, weight: .bold, design: .rounded)).tracking(1.6)
-            .foregroundStyle(ProofCamTheme.clay)
+        Text(text.uppercased()).font(.system(size: 10, weight: .semibold)).tracking(1.3)
+            .foregroundStyle(.secondary)
     }
 }

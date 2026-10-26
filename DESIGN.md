@@ -1,27 +1,36 @@
 # ProofCam design system
 
-## Product idea
+## Direction
 
-ProofCam is a small proof workshop: a photograph is handled like an archive print, given a signed record, and kept with care. Warmth belongs in the editorial framing; capture and security states remain calm and explicit.
+ProofCam is a professional camera and image-integrity tool. The interface uses restrained color, clear hierarchy, and direct language. Photography and verification results take priority over decoration.
 
-## Visual language
+## Color
 
-- **Palette:** warm paper `#F2EEDD`, soft ink `#1F2924`, olive `#4D634F`, clay `#BD5E3D`, straw `#D4B066`. Values are defined in `ProofCamTheme` and are original design choices, not copied from references. The control tint and success state adapt for dark appearance; the illustrated photo stays warm paper in either mode.
-- **Surfaces:** paper canvas with subtle hairline borders. No generic gradients, glass panels, or large floating shadows.
-- **Type:** system serif for a few editorial headlines; native text styles for instructions, controls, and settings. Labels use restrained tracking and uppercase only for small section markers.
-- **Illustration:** original vector-drawn archive print, small landscape, and seal made with SwiftUI shapes. It is decorative and VoiceOver-hidden; controls keep their own accessible labels.
-- **Iconography:** SF Symbols for standard actions and states, kept visually subordinate to text.
+Colors adapt to the device's appearance through `ProofCamTheme`:
 
-## Components and layout
+| Role | Light | Dark |
+| --- | --- | --- |
+| Background | Cool gray `#F2F4F7` | Charcoal `#0D131C` |
+| Surface | White `#FFFFFF` | Slate `#17212E` |
+| Primary text | Ink `#18212D` | Cool white `#E6EBF2` |
+| Primary button | Navy `#233F60` | Steel navy `#304F73` |
+| Control accent | Navy `#264C77` | Pale steel blue `#A6C2E2` |
+| Border | Gray `#D9DFE7` | Slate gray `#303D4D` |
+| Verified state | Green `#216E51` | Light green `#8CC7AC` |
+| Warning | Rust `#A14B27` | Muted orange `#E1A27E` |
 
-`ProofCamTheme` provides color tokens. `ProofCamMark` is the compact wordmark. `ProofWorkshopIllustration` supplies the original illustration. `WorkshopEyebrow` handles section labels. Screens use native `NavigationStack`, `TabView`, `PhotosPicker`, `fileImporter`, `ShareLink`, and system forms.
+Success and warning colors convey status with accompanying text and symbols. Ordinary controls use navy or neutral colors. White labels are used on the dark primary button fills in both appearances.
 
-Use consistent 16–20 point surface corners, 20–24 point major section spacing, and 44-point minimum control targets. Camera controls remain over the dark live preview. Editorial content uses leading alignment and short explanatory copy. Avoid forcing utility flows into identical cards.
+## Typography and components
 
-## Motion and accessibility
+Use native system sans-serif text with semibold headlines. Monospaced text is limited to short technical labels. Keep copy literal: “Verify a photo,” “Photo library,” and “No captured photos.”
 
-No feature depends on animation. Keep system Reduce Motion behavior. Keep text scalable by using system text styles wherever content is not display type; allow headline wrapping. Status communicates in text and symbols as well as color. Preserve system appearance selection and use adaptive canvas, ink, paper, and border tokens. Use safe-area-aware native containers and one-handed primary actions.
+Use 10–12 point surface corners, thin borders, generous spacing, and 44-point minimum control targets. Native forms, navigation, tab bars, system pickers, and share sheets remain the interaction foundation. Camera controls stay legible against the viewfinder.
 
-## Implemented feature boundary
+`ProofCamMark` combines a simple viewfinder symbol and system-type wordmark. `ProofDocumentIllustration` uses a restrained photo/signature diagram; `SectionLabel` provides neutral section labels. Decorative archive prints, seals, landscape art, and workshop language have been removed.
 
-The checked-in app currently exposes Capture, Verify, and Settings. It does not implement Photo Collections, screenshot-to-original discovery, Safe Copies, or Evidence Packet export. Those destinations are intentionally absent. The legacy watermark research form exists in `ResearchView` but is not the launch screen.
+## Accessibility and behavior
+
+Preserve system light/dark appearance, scalable native text styles, and safe-area-aware layouts. Status must be understandable without color. The visual refresh does not alter capture, signing, storage, or verification behavior.
+
+The app exposes Capture, Verify, and Settings. Collections, Safe Copies, and Evidence Packet export are not implemented destinations.
