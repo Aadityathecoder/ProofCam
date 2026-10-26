@@ -3,7 +3,11 @@ import Foundation
 /// Research v3: lower-frequency carrier, minimum-change embedding and soft Viterbi decoding.
 public enum AdaptiveCandidate {
     public static let name = "ios-tiled-adaptive-conv-v3"
-    static let basis=(0..<36).map { i in (1.0/3)*cos(Double(2*(i/6)+1)*Double.pi/12)*cos(Double(2*(i%6)+1)*Double.pi/12) }
+    static let basis: [Double] = (0..<36).map { i in
+        let rowAngle = Double(2 * (i / 6) + 1) * Double.pi / 12
+        let columnAngle = Double(2 * (i % 6) + 1) * Double.pi / 12
+        return (1.0 / 3) * cos(rowAngle) * cos(columnAngle)
+    }
     public static func embed(_ image: RGBImage,id: String) throws -> RGBImage {
         let bits=TiledCandidate.marker + encodedFrame(try DCTCore.frame(id))
         guard image.width>=132,image.height>=120 else { throw ResearchError.insufficientCapacity }

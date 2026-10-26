@@ -10,7 +10,12 @@ func read(_ name: String) throws -> RGBImage {
     func integer(_ start: Int) -> Int { bytes[start..<start+4].reduce(0) { ($0 << 8) | Int($1) } }
     let width = integer(0), height = integer(4)
     guard width <= 16384, height <= 16384, bytes.count == 8+width*height*3 else { throw ResearchError.invalidDimensions }
-    let pixels = stride(from: 8, to: bytes.count, by: 3).map { 0xff000000 | UInt32(bytes[$0]) << 16 | UInt32(bytes[$0+1]) << 8 | UInt32(bytes[$0+2]) }
+    let pixels: [UInt32] = stride(from: 8, to: bytes.count, by: 3).map { offset in
+        let red = UInt32(bytes[offset]) << 16
+        let green = UInt32(bytes[offset + 1]) << 8
+        let blue = UInt32(bytes[offset + 2])
+        return UInt32(0xff000000) | red | green | blue
+    }
     return try RGBImage(width: width, height: height, pixels: pixels)
 }
 for line in try String(contentsOf: directory.appendingPathComponent("jobs.tsv"), encoding: .utf8).split(separator: "\n") {

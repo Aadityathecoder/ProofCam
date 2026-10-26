@@ -16,7 +16,12 @@ final class HostSimulationTests: XCTestCase {
             guard bytes.count >= 8 else { throw ResearchError.invalidDimensions }
             let width = number(0), height = number(4)
             guard width > 0, height > 0, width <= 16384, height <= 16384, width*height <= 20_000_000, bytes.count == 8+width*height*3 else { throw ResearchError.invalidDimensions }
-            let pixels = stride(from:8,to:bytes.count,by:3).map { 0xff000000 | UInt32(bytes[$0]) << 16 | UInt32(bytes[$0+1]) << 8 | UInt32(bytes[$0+2]) }
+            let pixels: [UInt32] = stride(from: 8, to: bytes.count, by: 3).map { offset in
+                let red = UInt32(bytes[offset]) << 16
+                let green = UInt32(bytes[offset + 1]) << 8
+                let blue = UInt32(bytes[offset + 2])
+                return UInt32(0xff000000) | red | green | blue
+            }
             let image = try RGBImage(width:width,height:height,pixels:pixels)
             let start = DispatchTime.now().uptimeNanoseconds
             let recovery: Recovery

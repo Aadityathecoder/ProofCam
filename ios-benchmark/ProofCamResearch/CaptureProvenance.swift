@@ -3,6 +3,7 @@ import UIKit
 import AVFoundation
 import CryptoKit
 import Security
+import Photos
 
 /// Development enrollment uses a real device key, but the server does not yet attest it.
 enum CaptureKey {
@@ -48,6 +49,9 @@ struct PendingCapture: Identifiable {
     let folder: URL
     var jpeg: URL { folder.appendingPathComponent("photo.jpg") }
     var request: URL { folder.appendingPathComponent("request.cbor") }
+    var receipt: URL { folder.appendingPathComponent("receipt.json") }
+    var savedToPhotos: Bool { FileManager.default.fileExists(atPath: folder.appendingPathComponent("photos-saved").path) }
+    var createdAt: Date { (try? folder.resourceValues(forKeys: [.creationDateKey]).creationDate) ?? .distantPast }
     var hasRequest: Bool { FileManager.default.fileExists(atPath: request.path) }
 }
 
@@ -57,6 +61,9 @@ struct PendingCapture: Identifiable {
     @Published var appAttestExports = [URL]()
     @Published var busy = false
     @Published var showCamera = false
+    @Published var latestCapture: PendingCapture?
+    @Published var notice: String?
+    @Published private(set) var savingIDs = Set<String>()
     init() { refresh() }
 
     func directory() throws -> URL {
@@ -79,7 +86,7 @@ struct PendingCapture: Identifiable {
             }
             appAttestExports = attestFiles.sorted { $0.lastPathComponent < $1.lastPathComponent }
             pending = urls.filter { FileManager.default.fileExists(atPath: $0.appendingPathComponent("photo.jpg").path) }
-                .map { PendingCapture(id: $0.lastPathComponent.trimmingCharacters(in: CharacterSet(charactersIn: ".")), folder: $0) }.sorted { $0.id < $1.id }
+                .map { PendingCapture(id: $0.lastPathComponent.trimmingCharacters(in: CharacterSet(charactersIn: ".")), folder: $0) }.sorted { $0.createdAt > $1.createdAt }
         } catch { status = "Saved captures are unavailable while storage is inaccessible. Unlock the phone and try again." }
     }
     func startCamera() {
@@ -116,33 +123,74 @@ struct PendingCapture: Identifiable {
         Task {
             do {
                 let root = try directory()
-                try await Task.detached(priority: .userInitiated) {
+                let saved = try await Task.detached(priority: .userInitiated) {
                     let id = try CaptureKey.identifier()
                     let session = try CaptureKey.identifier()
-                    let key = try CaptureKey.load()
-                    let source = try AppleImageCodec.decode(data).atLongEdge(1024, upscale: true)
-                    let jpeg = try AppleImageCodec.jpeg(AdaptiveCandidate.embed(source, id: id))
                     let folder = root.appendingPathComponent("." + id, isDirectory: true)
                     try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: false,
                                                             attributes: [.protectionKey: FileProtectionType.complete])
                     // Preserve the sole finalized photo if later signing/storage fails.
                     let photo = folder.appendingPathComponent("photo.jpg")
+                    try data.write(to: photo, options: [.atomic, .completeFileProtection])
+                    let source = try AppleImageCodec.decode(data).atLongEdge(1024, upscale: true)
+                    let jpeg = try AppleImageCodec.jpeg(AdaptiveCandidate.embed(source, id: id))
                     try jpeg.write(to: photo, options: [.atomic, .completeFileProtection])
                     let finalBytes = try Data(contentsOf: photo)
                     guard finalBytes == jpeg else { throw ProvenanceWire.Invalid.signature }
+                    let key = try CaptureKey.load()
                     let digest = SHA256.hash(data: finalBytes).map { String(format: "%02x", $0) }.joined()
                     let payload = try ProvenanceWire.offlineCameraRequest(id: id, fileSHA256: digest, session: session)
-                    let signed = try CaptureKey.signed(payload, key: key, purpose: "register")
+                    let keyID = SHA256.hash(data: key.publicKey.x963Representation).map { String(format: "%02x", $0) }.joined()
+                    let input = try ProvenanceWire.signatureInput(payload: payload, keyID: keyID, purpose: "register")
+                    let signature = try key.signature(for: input).rawRepresentation
+                    let receipt = LocalCaptureReceipt(id: id, session: session, fileSHA256: digest,
+                                                      publicKey: key.publicKey.x963Representation, signature: signature)
+                    let signed = try receipt.request
+                    guard try receipt.verifies(finalBytes, request: signed) else { throw ProvenanceWire.Invalid.signature }
+                    try JSONEncoder().encode(receipt).write(to: folder.appendingPathComponent("receipt.json"), options: [.atomic, .completeFileProtection])
                     try signed.write(to: folder.appendingPathComponent("request.cbor"), options: [.atomic, .completeFileProtection])
-                    try FileManager.default.moveItem(at: folder, to: root.appendingPathComponent(id, isDirectory: true))
+                    let destination = root.appendingPathComponent(id, isDirectory: true)
+                    try FileManager.default.moveItem(at: folder, to: destination)
+                    return PendingCapture(id: id, folder: destination)
                 }.value
-                refresh(); status = "Saved locally. Export the JPEG and signed request, then register on your Mac. Camera origin and absence of AI are not certified."
+                refresh(); latestCapture = saved
+                if UserDefaults.standard.object(forKey: "proofcam.saveToPhotos") as? Bool ?? true {
+                    await saveToPhotos(saved)
+                } else { status = "Signed and saved in ProofCam." }
+
             } catch {
-                refresh(); status = "Capture finalization failed. Any written photo remains in protected local storage; no registration was claimed."
+                refresh(); status = "Couldn’t sign this photo. Any saved image is kept in ProofCam; it wasn’t added to Photos."
+                notice = status
             }
             busy = false
         }
     }
+    func saveToPhotos(_ capture: PendingCapture) async {
+        guard !capture.savedToPhotos, !savingIDs.contains(capture.id) else { return }
+        savingIDs.insert(capture.id); defer { savingIDs.remove(capture.id) }
+        do {
+            let data = try Data(contentsOf: capture.jpeg)
+            let receipt = try JSONDecoder().decode(LocalCaptureReceipt.self, from: Data(contentsOf: capture.receipt))
+            guard try receipt.verifies(data, request: Data(contentsOf: capture.request)) else { throw ProvenanceWire.Invalid.signature }
+            let authorization = await PHPhotoLibrary.requestAuthorization(for: .addOnly)
+            guard authorization == .authorized || authorization == .limited else {
+                status = "Signed and kept in ProofCam. Allow Photos access in Settings to save to your camera roll."
+                notice = status; return
+            }
+            try await PHPhotoLibrary.shared().performChanges {
+                let asset = PHAssetCreationRequest.forAsset()
+                let options = PHAssetResourceCreationOptions()
+                options.originalFilename = "ProofCam-" + capture.id + ".jpg"
+                asset.addResource(with: .photo, data: data, options: options)
+            }
+            try Data().write(to: capture.folder.appendingPathComponent("photos-saved"), options: [.atomic, .completeFileProtection])
+            refresh(); status = "Signed and saved to Photos."
+        } catch {
+            status = "Signed photo kept in ProofCam. Saving to Photos failed; you can retry from the photo viewer."
+            notice = status
+        }
+    }
+
 }
 
 struct ProofCamCamera: UIViewControllerRepresentable {

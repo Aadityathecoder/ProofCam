@@ -4,6 +4,8 @@ ProofCam is an iPhone camera project that lets recipients check whether a photo 
 
 This folder is the project working directory. Product documentation, application code, backend code, and project tooling will live here as development proceeds.
 
+For local setup and build commands, see [local development](docs/07-local-development.md). The app now opens to a camera-first interface with Capture, Verify and Settings tabs, plus a first-launch introduction; see [the camera experience](docs/08-camera-experience.md).
+
 ## Current milestone
 
 Steps 1 and 2 are documented in the [product brief](docs/01-product-brief.md) and [pilot scope and free development](docs/02-pilot-scope-and-free-development.md). These are planning decisions; implementation and device validation remain pending.
@@ -20,7 +22,7 @@ Step 6: the [desktop study is complete](docs/06-conventional-watermark-final-rep
 
 The product brief and pilot scope describe the planned product. Implemented research capabilities and remaining validation gates are documented below.
 
-An [iPhone research port](ios-benchmark/README.md) is prepared for the available iPhone 16 Pro. Portable Swift core tests and raw-pixel cross-decoder checks pass; Xcode compilation and physical iPhone validation remain pending. Physical iPhone validation is the next device milestone.
+An [iPhone research port](ios-benchmark/README.md) is prepared for the available iPhone 16 Pro. Swift Debug and Release tests and raw-pixel cross-decoder checks pass; the unsigned Release app compiles against the iPhone simulator SDK. Physical iPhone validation remains pending. Physical iPhone validation is the next device milestone.
 
 The iPhone experiment defaults to an [adaptive tiled v3 watermark](ios-benchmark/ADAPTIVE-V3.md), with v1/v2 retained for comparison. It recovers all 125 marked host simulation cases, including the six previous v2 misses. The broader search is slower; device validation and product quality gates remain pending.
 

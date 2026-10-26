@@ -60,7 +60,12 @@ final class TiledTests: XCTestCase {
             let bytes = Array(try Data(contentsOf:folder.appendingPathComponent(parts[0]+".rgb")))
             func integer(_ i: Int) -> Int { bytes[i..<i+4].reduce(0) { ($0 << 8)|Int($1) } }
             let w = integer(0), h = integer(4)
-            let pixels = stride(from:8,to:bytes.count,by:3).map { 0xff000000 | UInt32(bytes[$0])<<16 | UInt32(bytes[$0+1])<<8 | UInt32(bytes[$0+2]) }
+            let pixels: [UInt32] = stride(from: 8, to: bytes.count, by: 3).map { offset in
+                let red = UInt32(bytes[offset]) << 16
+                let green = UInt32(bytes[offset + 1]) << 8
+                let blue = UInt32(bytes[offset + 2])
+                return UInt32(0xff000000) | red | green | blue
+            }
             let source = try RGBImage(width:w,height:h,pixels:pixels)
             let marked = try TiledCandidate.embed(source,id:parts[1])
             XCTAssertTrue(TiledCandidate.tiles(marked).contains { $0.0 == parts[1] })

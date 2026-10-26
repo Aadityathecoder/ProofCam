@@ -65,7 +65,12 @@ final class AdaptiveTests: XCTestCase {
             let bytes=Array(try Data(contentsOf:folder.appendingPathComponent(parts[0]+".rgb")))
             func integer(_ i: Int) -> Int { bytes[i..<i+4].reduce(0) { ($0 << 8)|Int($1) } }
             let w=integer(0),h=integer(4)
-            let pixels=stride(from:8,to:bytes.count,by:3).map { 0xff000000 | UInt32(bytes[$0])<<16 | UInt32(bytes[$0+1])<<8 | UInt32(bytes[$0+2]) }
+            let pixels: [UInt32] = stride(from: 8, to: bytes.count, by: 3).map { offset in
+                let red = UInt32(bytes[offset]) << 16
+                let green = UInt32(bytes[offset + 1]) << 8
+                let blue = UInt32(bytes[offset + 2])
+                return UInt32(0xff000000) | red | green | blue
+            }
             let marked=try AdaptiveCandidate.embed(RGBImage(width:w,height:h,pixels:pixels),id:parts[1])
             XCTAssertTrue(AdaptiveCandidate.tiles(GrayPlane(marked)).contains { $0.0==parts[1] })
             var output=Data(bytes.prefix(8))
@@ -82,7 +87,12 @@ final class AdaptiveTests: XCTestCase {
             let bytes=Array(try Data(contentsOf:folder.appendingPathComponent(input.file)))
             func integer(_ i: Int) -> Int { bytes[i..<i+4].reduce(0) { ($0 << 8)|Int($1) } }
             let w=integer(0),h=integer(4)
-            let pixels=stride(from:8,to:bytes.count,by:3).map { 0xff000000 | UInt32(bytes[$0])<<16 | UInt32(bytes[$0+1])<<8 | UInt32(bytes[$0+2]) }
+            let pixels: [UInt32] = stride(from: 8, to: bytes.count, by: 3).map { offset in
+                let red = UInt32(bytes[offset]) << 16
+                let green = UInt32(bytes[offset + 1]) << 8
+                let blue = UInt32(bytes[offset + 2])
+                return UInt32(0xff000000) | red | green | blue
+            }
             let plane=GrayPlane(try RGBImage(width:w,height:h,pixels:pixels))
             let view=input.name.contains("crop_then_half") ? plane : plane.resized(edge:min(512,max(w,h))).transformed(degrees:input.name.contains("7.3") ? 7 : 20)
             let found=AdaptiveCandidate.tiles(view,block:input.name.contains("crop_then_half") || max(w,h)>512 ? 3:6).map { $0.0 }

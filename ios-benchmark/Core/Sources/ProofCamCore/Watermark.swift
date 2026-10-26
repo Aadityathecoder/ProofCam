@@ -67,7 +67,9 @@ public struct RGBImage: Sendable, Equatable {
 public enum DCTCore {
     public static let frameBits = 176
     static let basis: [Double] = (0..<64).map { i in
-        0.25 * cos(Double(2*(i/8)+1)*Double.pi/16) * cos(Double(2*(i%8)+1)*2*Double.pi/16)
+        let rowAngle = Double(2 * (i / 8) + 1) * Double.pi / 16
+        let columnAngle = Double(2 * (i % 8) + 1) * 2 * Double.pi / 16
+        return 0.25 * cos(rowAngle) * cos(columnAngle)
     }
     static let crcTable: [UInt32] = (0..<256).map { i in
         var value = UInt32(i)

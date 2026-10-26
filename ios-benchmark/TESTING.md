@@ -1,3 +1,13 @@
+# Camera experience validation — October 26, 2026
+
+The camera-first app builds for the arm64 iPhone simulator. Debug and Release Swift suites each discover 53 tests: 49 passed, four optional fixture skips, zero failures. The four new local-receipt tests cover serialization and cryptographic tamper rejection. Manual simulator checks cover first-run onboarding, completion and relaunch behavior, Capture/Verify/Settings navigation, empty gallery, grid-setting persistence, and guide reopening. See [camera behavior and physical-device gates](../docs/08-camera-experience.md). This does not qualify physical capture or Photos saving.
+
+# Current local build check — October 26, 2026
+
+On this Mac, Debug and Release core/parity builds pass with Apple Swift 6.3.2 after simplifying compiler-heavy expressions. The benchmark and provenance Python suites pass (40 and 52 tests). Two procedural fixtures pass Python/Swift cross-decoding and pixel midpoint checks in both build configurations. With Xcode 26.6 installed, Debug and Release XCTest each run 49 tests: 45 pass, four optional fixture tests skip, and none fail. This includes six Apple codec tests and two CryptoKit provenance tests. The unsigned Release app build also passes against the iOS 26.5 simulator SDK for arm64 after splitting grouped SwiftUI `@State` declarations. This is compilation evidence; Simulator launch and physical-device validation remain pending. See [local setup and validation](../docs/07-local-development.md).
+
+The audit below is the historical Linux/WSL record; it does not describe the current Mac environment.
+
 # iPhone port test audit — 2026-09-26
 
 This is a host validation record, not a claim that the app works in every situation. The available machine is Linux/WSL, with Swift 6.0.3 and no Xcode or connected iPhone. Apple build and device gates remain open.

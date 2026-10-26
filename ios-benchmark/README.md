@@ -2,22 +2,33 @@
 
 An iOS 17+ SwiftUI watermark experiment, intended for the available **iPhone 16 Pro**. This is research software, not the production capture/certificate app. It uses free local tools without analytics or automatic media uploads. Default builds make no app network requests; optional App Attest calls contact Apple. A separate [local provenance service](../provenance/README.md) now accepts device-signed requests exported from the camera experiment; it issues development records only.
 
-**Status:** source and Xcode project prepared. Portable Swift tests, synthetic geometry simulations, and three raw RGB cross-decoder fixtures passed on Linux with Swift 6.0.3. The app source passes Swift syntax parsing. See the [test audit](TESTING.md) for coverage and outstanding checks. **No Apple SDK typecheck, Xcode build, simulator run, signing, or physical iPhone test has been performed here.** Run the Mac validation below before collecting evidence. See [host parity results](../benchmark/reports/step06-ios-parity.json).
+**Status (October 26, 2026):** Xcode 26.6 runs the Debug and Release core tests on macOS: 45 passed, four optional fixture tests skipped, zero failures per configuration. Six Apple codec tests and two CryptoKit provenance tests are included. The unsigned Release app compiles against the iOS 26.5 simulator SDK for arm64. Historical synthetic geometry simulations and raw RGB cross-decoder evidence remain in the [test audit](TESTING.md) and [host parity report](../benchmark/reports/step06-ios-parity.json). Simulator launch, signing, physical iPhone execution and live App Attest qualification remain pending.
+
 
 ## Open on your Mac
 
 1. Clone `https://github.com/a4maan/ProofCam.git`, or run `git pull` in your existing checkout.
-2. From the repository root, run `bash ios-benchmark/tools/validate-mac.sh`. This runs Debug and Release core tests, six Apple image-codec tests and two CryptoKit provenance tests on macOS, and an unsigned Release simulator build. A successful simulator build is not device validation.
+2. From the repository root, run `bash ios-benchmark/tools/validate-mac.sh` (or prefix it with `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer` if Command Line Tools is still selected). This runs Debug and Release core tests, six Apple image-codec tests and two CryptoKit provenance tests on macOS, and an unsigned Release simulator SDK build for the host architecture. The build does not require a simulator runtime; launching in Simulator does. A successful build is not device validation.
 3. Open `ios-benchmark/ProofCamResearch.xcodeproj`. In the ProofCamResearch target's **Signing & Capabilities**, select your Personal Team. If needed, change the bundle identifier to one unique to your account.
 4. Connect and trust your iPhone 16 Pro, enable Developer Mode if Xcode requests it, select the physical phone as the run destination, and press Run. The shared scheme uses Release optimization for useful timings. Stop the debugger and launch the installed app directly before collecting measurements.
 
 Xcode and a free Apple Account support personal device testing; free provisioning needs periodic renewal. No paid Developer Program membership or TestFlight is required for this workflow. [Apple membership comparison](https://developer.apple.com/support/compare-memberships/).
 
+## App experience
+
+First launch presents an introduction. After completion, the app opens directly to Capture. The bottom bar switches between Capture, Verify and Settings. Photos are signed before being added to the camera roll; Settings controls automatic saving, camera grid and haptics. The recent-photo thumbnail opens the local library and signature-sharing actions. See [camera experience and validation limits](../docs/08-camera-experience.md).
+
+Simulator supports the interface and file selection, but actual capture/signing requires a physical iPhone. The existing watermark export remains capped at a 1024-pixel long edge.
+
 ## Capture provenance experiment
 
-The new **Capture provenance — development** section captures directly from the camera and binds the finalized watermarked JPEG to a Secure Enclave signature. It saves pending JPEG/request pairs across app launches. Enrollment, submission to the local development service, and independent verification follow the [provenance instructions](../provenance/README.md). There is no automatic mobile upload, server-attested camera-origin claim, or proof of absence of AI. The optional [App Attest integration](../provenance/APP-ATTEST.md) adds server checks on app-bound request evidence, requires eligible Apple provisioning, and stays inactive in the default free build. This path has only been syntax-checked here; run the Mac/iPhone checks before relying on it.
+The **Capture** tab captures directly from the camera and binds the finalized watermarked JPEG to a Secure Enclave signature. It saves pending JPEG/request pairs across app launches. Enrollment, submission to the local development service, and independent verification follow the [provenance instructions](../provenance/README.md). There is no automatic mobile upload, server-attested camera-origin claim, or proof of absence of AI. The optional [App Attest integration](../provenance/APP-ATTEST.md) adds server checks on app-bound request evidence, requires eligible Apple provisioning, and stays inactive in the default free build. This path has only been syntax-checked here; run the Mac/iPhone checks before relying on it.
 
-## Run a watermark experiment
+## Legacy research workflow
+
+The earlier `ResearchView` source is retained for development; it is not the app’s launch screen or part of the three-tab interface. The steps below document that earlier research view. Current users should follow the camera experience above.
+
+### Run a watermark experiment
 
 1. Save an opaque JPEG/PNG test image to Files. HEIC and transparent PNG inputs are unsupported. Import via **Choose image and run 20 samples**. Files gives the app the selected file bytes, which are hashed without rewriting. Keep that source file.
 2. Wait for three warmups and 20 measured iterations. Each iteration embeds a fresh run's common 128-bit random ID, encodes Apple JPEG at quality 0.95, decodes that JPEG, and runs bounded recovery. Image normalization and JPEG decode time are excluded from the reported embed/extract timings; JPEG encoding is included in embed time. Timings are milliseconds; displayed p95 is nearest rank, sample 19 of 20 sorted values. JSON contains every sample.

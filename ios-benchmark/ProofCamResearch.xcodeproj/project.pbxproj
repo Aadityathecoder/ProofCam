@@ -1,36 +1,260 @@
 // !$*UTF8*$!
-{ archiveVersion = 1; classes = {}; objectVersion = 56; objects = {
-7448F05048FBE4A21901B3B8 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProofCamResearch/App.swift"; sourceTree = "<group>"; };
-48424A55D9ED3322AEB5A822 = { isa = PBXBuildFile; fileRef = 7448F05048FBE4A21901B3B8; };
-8C1009065D285E9ABAF3861B = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProofCamResearch/CaptureProvenance.swift"; sourceTree = "<group>"; };
-C7ED9D3B9CC9DB2D1B9D9C2E = { isa = PBXBuildFile; fileRef = 8C1009065D285E9ABAF3861B; };
-6A3E4B17C5D88BDD2466A80A = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProofCamResearch/AppAttestProvenance.swift"; sourceTree = "<group>"; };
-C8FD0B7CB2BDE843077E88B6 = { isa = PBXBuildFile; fileRef = 6A3E4B17C5D88BDD2466A80A; };
-C8354FFE6822D03A3CE46DFC = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Core/Sources/ProofCamCore/ProvenanceWire.swift"; sourceTree = "<group>"; };
-C723EC18A1E15827896E3F2C = { isa = PBXBuildFile; fileRef = C8354FFE6822D03A3CE46DFC; };
-9B7061E1E2AD75EAD3C64307 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Core/Sources/ProofCamCore/Watermark.swift"; sourceTree = "<group>"; };
-30C794A5FA8B390F52FB2AF3 = { isa = PBXBuildFile; fileRef = 9B7061E1E2AD75EAD3C64307; };
-86FBBF4F046256F8D23CF2F4 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Core/Sources/ProofCamCore/ResearchUtilities.swift"; sourceTree = "<group>"; };
-77EEEDD4A6F9488755AD7E30 = { isa = PBXBuildFile; fileRef = 86FBBF4F046256F8D23CF2F4; };
-6A0DCF5A53442116D2688E4E = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Core/Sources/ProofCamCore/AppleImageCodec.swift"; sourceTree = "<group>"; };
-BCBE8C8F44AE6C031B34C81B = { isa = PBXBuildFile; fileRef = 6A0DCF5A53442116D2688E4E; };
-73DE32D8E9BD5DE496075A82 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Core/Sources/ProofCamCore/TiledCandidate.swift"; sourceTree = "<group>"; };
-DADAE2B0DADDAB25F4B27F45 = { isa = PBXBuildFile; fileRef = 73DE32D8E9BD5DE496075A82; };
-E974BBA806CB2BAFD0EB7028 = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Core/Sources/ProofCamCore/AdaptiveCandidate.swift"; sourceTree = "<group>"; };
-514407C6A73137F5B9D30F60 = { isa = PBXBuildFile; fileRef = E974BBA806CB2BAFD0EB7028; };
-C3C4F7B7EE68FBC75A33861C = { isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Core/Sources/ProofCamCore/GrayPlane.swift"; sourceTree = "<group>"; };
-4960BC0D4740BFB38C207A85 = { isa = PBXBuildFile; fileRef = C3C4F7B7EE68FBC75A33861C; };
-A8792157CB4F27FB949C035F = { isa = PBXFileReference; explicitFileType = wrapper.application; path = ProofCamResearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
-0A3E27B8CA818264D75C8D81 = { isa = PBXGroup; children = (A8792157CB4F27FB949C035F,); name = Products; sourceTree = "<group>"; };
-AD936FCBED631FA67E05C3EA = { isa = PBXGroup; children = (7448F05048FBE4A21901B3B8,8C1009065D285E9ABAF3861B,6A3E4B17C5D88BDD2466A80A,C8354FFE6822D03A3CE46DFC,9B7061E1E2AD75EAD3C64307,86FBBF4F046256F8D23CF2F4,6A0DCF5A53442116D2688E4E,73DE32D8E9BD5DE496075A82,E974BBA806CB2BAFD0EB7028,C3C4F7B7EE68FBC75A33861C,0A3E27B8CA818264D75C8D81,); sourceTree = "<group>"; };
-878A52FC5FF6A57D50B7B870 = { isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (48424A55D9ED3322AEB5A822,C7ED9D3B9CC9DB2D1B9D9C2E,C8FD0B7CB2BDE843077E88B6,C723EC18A1E15827896E3F2C,30C794A5FA8B390F52FB2AF3,77EEEDD4A6F9488755AD7E30,BCBE8C8F44AE6C031B34C81B,DADAE2B0DADDAB25F4B27F45,514407C6A73137F5B9D30F60,4960BC0D4740BFB38C207A85,); runOnlyForDeploymentPostprocessing = 0; };
-E2AA269EB967A8853A258BFA = { isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
-73EBF6644258C120893E685D = { isa = XCBuildConfiguration; buildSettings = { IPHONEOS_DEPLOYMENT_TARGET = 17.0; SDKROOT = iphoneos; SWIFT_VERSION = 5.0; CLANG_ENABLE_MODULES = YES; SWIFT_OPTIMIZATION_LEVEL = "-Onone";  }; name = Debug; };
-0B0C687DF8B6B8DC790B519C = { isa = XCBuildConfiguration; buildSettings = { IPHONEOS_DEPLOYMENT_TARGET = 17.0; SDKROOT = iphoneos; SWIFT_VERSION = 5.0; CLANG_ENABLE_MODULES = YES; SWIFT_OPTIMIZATION_LEVEL = "-O";  }; name = Release; };
-76F8DEC3DFE0BDB465198890 = { isa = XCConfigurationList; buildConfigurations = (73EBF6644258C120893E685D,0B0C687DF8B6B8DC790B519C,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
-6C7EFF6369083C8E1F2B1994 = { isa = XCBuildConfiguration; buildSettings = { IPHONEOS_DEPLOYMENT_TARGET = 17.0; SDKROOT = iphoneos; SWIFT_VERSION = 5.0; CLANG_ENABLE_MODULES = YES; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; PROOFCAM_APP_ATTEST_ENABLED = NO; PROOFCAM_APP_ATTEST_ENTITLEMENTS = ""; INFOPLIST_KEY_ProofCamAppAttestEnabled = "$(PROOFCAM_APP_ATTEST_ENABLED)"; CODE_SIGN_ENTITLEMENTS = "$(PROOFCAM_APP_ATTEST_ENTITLEMENTS)"; PRODUCT_NAME = "$(TARGET_NAME)"; PRODUCT_BUNDLE_IDENTIFIER = com.a4maan.proofcam.research; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = "ProofCam Research"; INFOPLIST_KEY_NSCameraUsageDescription = "Take a photo and bind its final export to a device-signed development request."; INFOPLIST_KEY_UILaunchScreen_Generation = YES; INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES; INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait; TARGETED_DEVICE_FAMILY = 1; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 0.1; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";  }; name = Debug; };
-DD75E2CB1C510A828AC72D96 = { isa = XCBuildConfiguration; buildSettings = { IPHONEOS_DEPLOYMENT_TARGET = 17.0; SDKROOT = iphoneos; SWIFT_VERSION = 5.0; CLANG_ENABLE_MODULES = YES; SWIFT_OPTIMIZATION_LEVEL = "-O"; PROOFCAM_APP_ATTEST_ENABLED = NO; PROOFCAM_APP_ATTEST_ENTITLEMENTS = ""; INFOPLIST_KEY_ProofCamAppAttestEnabled = "$(PROOFCAM_APP_ATTEST_ENABLED)"; CODE_SIGN_ENTITLEMENTS = "$(PROOFCAM_APP_ATTEST_ENTITLEMENTS)"; PRODUCT_NAME = "$(TARGET_NAME)"; PRODUCT_BUNDLE_IDENTIFIER = com.a4maan.proofcam.research; GENERATE_INFOPLIST_FILE = YES; INFOPLIST_KEY_CFBundleDisplayName = "ProofCam Research"; INFOPLIST_KEY_NSCameraUsageDescription = "Take a photo and bind its final export to a device-signed development request."; INFOPLIST_KEY_UILaunchScreen_Generation = YES; INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES; INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait; TARGETED_DEVICE_FAMILY = 1; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 0.1; SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";  }; name = Release; };
-1B672BF3DA427763BF644BE3 = { isa = XCConfigurationList; buildConfigurations = (6C7EFF6369083C8E1F2B1994,DD75E2CB1C510A828AC72D96,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
-34A04005BCAF206EEC990BD9 = { isa = PBXNativeTarget; buildConfigurationList = 1B672BF3DA427763BF644BE3; buildPhases = (878A52FC5FF6A57D50B7B870,E2AA269EB967A8853A258BFA,); buildRules = (); dependencies = (); name = ProofCamResearch; productName = ProofCamResearch; productReference = A8792157CB4F27FB949C035F; productType = "com.apple.product-type.application"; };
-244210E48437B6556980A702 = { isa = PBXProject; attributes = { LastUpgradeCheck = 1600; }; buildConfigurationList = 76F8DEC3DFE0BDB465198890; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en,Base,); mainGroup = AD936FCBED631FA67E05C3EA; productRefGroup = 0A3E27B8CA818264D75C8D81; projectDirPath = ""; projectRoot = ""; targets = (34A04005BCAF206EEC990BD9,); };
-}; rootObject = 244210E48437B6556980A702; }
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		30C794A5FA8B390F52FB2AF3 /* Core/Sources/ProofCamCore/Watermark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B7061E1E2AD75EAD3C64307 /* Core/Sources/ProofCamCore/Watermark.swift */; };
+		48424A55D9ED3322AEB5A822 /* ProofCamResearch/App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7448F05048FBE4A21901B3B8 /* ProofCamResearch/App.swift */; };
+		4960BC0D4740BFB38C207A85 /* Core/Sources/ProofCamCore/GrayPlane.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C4F7B7EE68FBC75A33861C /* Core/Sources/ProofCamCore/GrayPlane.swift */; };
+		514407C6A73137F5B9D30F60 /* Core/Sources/ProofCamCore/AdaptiveCandidate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E974BBA806CB2BAFD0EB7028 /* Core/Sources/ProofCamCore/AdaptiveCandidate.swift */; };
+		6D0646800F167FF77B3C7E66 /* ProofCamResearch/CameraScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D600960E5542BB04E951D7B /* ProofCamResearch/CameraScreen.swift */; };
+		77EEEDD4A6F9488755AD7E30 /* Core/Sources/ProofCamCore/ResearchUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86FBBF4F046256F8D23CF2F4 /* Core/Sources/ProofCamCore/ResearchUtilities.swift */; };
+		8459FF819AABB4982CFA3DF1 /* ProofCamResearch/VerifyScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = C133981EC9E728DA4356691F /* ProofCamResearch/VerifyScreen.swift */; };
+		9BF61BFD90D4D9EF5E278E8A /* ProofCamResearch/SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5FAAE9AA374C24CAC3157E /* ProofCamResearch/SettingsScreen.swift */; };
+		BCBE8C8F44AE6C031B34C81B /* Core/Sources/ProofCamCore/AppleImageCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A0DCF5A53442116D2688E4E /* Core/Sources/ProofCamCore/AppleImageCodec.swift */; };
+		C723EC18A1E15827896E3F2C /* Core/Sources/ProofCamCore/ProvenanceWire.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8354FFE6822D03A3CE46DFC /* Core/Sources/ProofCamCore/ProvenanceWire.swift */; };
+		C7ED9D3B9CC9DB2D1B9D9C2E /* ProofCamResearch/CaptureProvenance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C1009065D285E9ABAF3861B /* ProofCamResearch/CaptureProvenance.swift */; };
+		C8FD0B7CB2BDE843077E88B6 /* ProofCamResearch/AppAttestProvenance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A3E4B17C5D88BDD2466A80A /* ProofCamResearch/AppAttestProvenance.swift */; };
+		DADAE2B0DADDAB25F4B27F45 /* Core/Sources/ProofCamCore/TiledCandidate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73DE32D8E9BD5DE496075A82 /* Core/Sources/ProofCamCore/TiledCandidate.swift */; };
+		E12758713DDE12C5DA3C8F03 /* Core/Sources/ProofCamCore/LocalCaptureReceipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A529787C67D6E61AAEC29E9 /* Core/Sources/ProofCamCore/LocalCaptureReceipt.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1D600960E5542BB04E951D7B /* ProofCamResearch/CameraScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProofCamResearch/CameraScreen.swift; sourceTree = "<group>"; };
+		3E5FAAE9AA374C24CAC3157E /* ProofCamResearch/SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProofCamResearch/SettingsScreen.swift; sourceTree = "<group>"; };
+		6A0DCF5A53442116D2688E4E /* Core/Sources/ProofCamCore/AppleImageCodec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Sources/ProofCamCore/AppleImageCodec.swift; sourceTree = "<group>"; };
+		6A3E4B17C5D88BDD2466A80A /* ProofCamResearch/AppAttestProvenance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProofCamResearch/AppAttestProvenance.swift; sourceTree = "<group>"; };
+		73DE32D8E9BD5DE496075A82 /* Core/Sources/ProofCamCore/TiledCandidate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Sources/ProofCamCore/TiledCandidate.swift; sourceTree = "<group>"; };
+		7448F05048FBE4A21901B3B8 /* ProofCamResearch/App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProofCamResearch/App.swift; sourceTree = "<group>"; };
+		86FBBF4F046256F8D23CF2F4 /* Core/Sources/ProofCamCore/ResearchUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Sources/ProofCamCore/ResearchUtilities.swift; sourceTree = "<group>"; };
+		8A529787C67D6E61AAEC29E9 /* Core/Sources/ProofCamCore/LocalCaptureReceipt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Sources/ProofCamCore/LocalCaptureReceipt.swift; sourceTree = "<group>"; };
+		8C1009065D285E9ABAF3861B /* ProofCamResearch/CaptureProvenance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProofCamResearch/CaptureProvenance.swift; sourceTree = "<group>"; };
+		9B7061E1E2AD75EAD3C64307 /* Core/Sources/ProofCamCore/Watermark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Sources/ProofCamCore/Watermark.swift; sourceTree = "<group>"; };
+		A8792157CB4F27FB949C035F /* ProofCamResearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; path = ProofCamResearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C133981EC9E728DA4356691F /* ProofCamResearch/VerifyScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProofCamResearch/VerifyScreen.swift; sourceTree = "<group>"; };
+		C3C4F7B7EE68FBC75A33861C /* Core/Sources/ProofCamCore/GrayPlane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Sources/ProofCamCore/GrayPlane.swift; sourceTree = "<group>"; };
+		C8354FFE6822D03A3CE46DFC /* Core/Sources/ProofCamCore/ProvenanceWire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Sources/ProofCamCore/ProvenanceWire.swift; sourceTree = "<group>"; };
+		E974BBA806CB2BAFD0EB7028 /* Core/Sources/ProofCamCore/AdaptiveCandidate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Sources/ProofCamCore/AdaptiveCandidate.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E2AA269EB967A8853A258BFA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0A3E27B8CA818264D75C8D81 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A8792157CB4F27FB949C035F /* ProofCamResearch.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AD936FCBED631FA67E05C3EA = {
+			isa = PBXGroup;
+			children = (
+				7448F05048FBE4A21901B3B8 /* ProofCamResearch/App.swift */,
+				1D600960E5542BB04E951D7B /* ProofCamResearch/CameraScreen.swift */,
+				3E5FAAE9AA374C24CAC3157E /* ProofCamResearch/SettingsScreen.swift */,
+				C133981EC9E728DA4356691F /* ProofCamResearch/VerifyScreen.swift */,
+				8A529787C67D6E61AAEC29E9 /* Core/Sources/ProofCamCore/LocalCaptureReceipt.swift */,
+				8C1009065D285E9ABAF3861B /* ProofCamResearch/CaptureProvenance.swift */,
+				6A3E4B17C5D88BDD2466A80A /* ProofCamResearch/AppAttestProvenance.swift */,
+				C8354FFE6822D03A3CE46DFC /* Core/Sources/ProofCamCore/ProvenanceWire.swift */,
+				9B7061E1E2AD75EAD3C64307 /* Core/Sources/ProofCamCore/Watermark.swift */,
+				86FBBF4F046256F8D23CF2F4 /* Core/Sources/ProofCamCore/ResearchUtilities.swift */,
+				6A0DCF5A53442116D2688E4E /* Core/Sources/ProofCamCore/AppleImageCodec.swift */,
+				73DE32D8E9BD5DE496075A82 /* Core/Sources/ProofCamCore/TiledCandidate.swift */,
+				E974BBA806CB2BAFD0EB7028 /* Core/Sources/ProofCamCore/AdaptiveCandidate.swift */,
+				C3C4F7B7EE68FBC75A33861C /* Core/Sources/ProofCamCore/GrayPlane.swift */,
+				0A3E27B8CA818264D75C8D81 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		34A04005BCAF206EEC990BD9 /* ProofCamResearch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1B672BF3DA427763BF644BE3 /* Build configuration list for PBXNativeTarget "ProofCamResearch" */;
+			buildPhases = (
+				878A52FC5FF6A57D50B7B870 /* Sources */,
+				E2AA269EB967A8853A258BFA /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ProofCamResearch;
+			productName = ProofCamResearch;
+			productReference = A8792157CB4F27FB949C035F /* ProofCamResearch.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		244210E48437B6556980A702 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = 76F8DEC3DFE0BDB465198890 /* Build configuration list for PBXProject "ProofCamResearch" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = AD936FCBED631FA67E05C3EA;
+			productRefGroup = 0A3E27B8CA818264D75C8D81 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				34A04005BCAF206EEC990BD9 /* ProofCamResearch */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		878A52FC5FF6A57D50B7B870 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				48424A55D9ED3322AEB5A822 /* ProofCamResearch/App.swift in Sources */,
+				6D0646800F167FF77B3C7E66 /* ProofCamResearch/CameraScreen.swift in Sources */,
+				9BF61BFD90D4D9EF5E278E8A /* ProofCamResearch/SettingsScreen.swift in Sources */,
+				8459FF819AABB4982CFA3DF1 /* ProofCamResearch/VerifyScreen.swift in Sources */,
+				E12758713DDE12C5DA3C8F03 /* Core/Sources/ProofCamCore/LocalCaptureReceipt.swift in Sources */,
+				C7ED9D3B9CC9DB2D1B9D9C2E /* ProofCamResearch/CaptureProvenance.swift in Sources */,
+				C8FD0B7CB2BDE843077E88B6 /* ProofCamResearch/AppAttestProvenance.swift in Sources */,
+				C723EC18A1E15827896E3F2C /* Core/Sources/ProofCamCore/ProvenanceWire.swift in Sources */,
+				30C794A5FA8B390F52FB2AF3 /* Core/Sources/ProofCamCore/Watermark.swift in Sources */,
+				77EEEDD4A6F9488755AD7E30 /* Core/Sources/ProofCamCore/ResearchUtilities.swift in Sources */,
+				BCBE8C8F44AE6C031B34C81B /* Core/Sources/ProofCamCore/AppleImageCodec.swift in Sources */,
+				DADAE2B0DADDAB25F4B27F45 /* Core/Sources/ProofCamCore/TiledCandidate.swift in Sources */,
+				514407C6A73137F5B9D30F60 /* Core/Sources/ProofCamCore/AdaptiveCandidate.swift in Sources */,
+				4960BC0D4740BFB38C207A85 /* Core/Sources/ProofCamCore/GrayPlane.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		0B0C687DF8B6B8DC790B519C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		6C7EFF6369083C8E1F2B1994 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "$(PROOFCAM_APP_ATTEST_ENTITLEMENTS)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9755649498;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = ProofCam;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Take photos and sign them on this iPhone.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save your signed photos to your camera roll.";
+				INFOPLIST_KEY_ProofCamAppAttestEnabled = "$(PROOFCAM_APP_ATTEST_ENABLED)";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.a4maan.proofcam.research;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROOFCAM_APP_ATTEST_ENABLED = NO;
+				PROOFCAM_APP_ATTEST_ENTITLEMENTS = "";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		73EBF6644258C120893E685D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		DD75E2CB1C510A828AC72D96 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "$(PROOFCAM_APP_ATTEST_ENTITLEMENTS)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 9755649498;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = ProofCam;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Take photos and sign them on this iPhone.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Save your signed photos to your camera roll.";
+				INFOPLIST_KEY_ProofCamAppAttestEnabled = "$(PROOFCAM_APP_ATTEST_ENABLED)";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.a4maan.proofcam.research;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROOFCAM_APP_ATTEST_ENABLED = NO;
+				PROOFCAM_APP_ATTEST_ENTITLEMENTS = "";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1B672BF3DA427763BF644BE3 /* Build configuration list for PBXNativeTarget "ProofCamResearch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6C7EFF6369083C8E1F2B1994 /* Debug */,
+				DD75E2CB1C510A828AC72D96 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		76F8DEC3DFE0BDB465198890 /* Build configuration list for PBXProject "ProofCamResearch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				73EBF6644258C120893E685D /* Debug */,
+				0B0C687DF8B6B8DC790B519C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 244210E48437B6556980A702 /* Project object */;
+}

@@ -26,9 +26,14 @@ public static func decode(_ data: Data) throws -> RGBImage {
         context.draw(image, in: CGRect(x: 0, y: 0, width: CGFloat(image.width), height: CGFloat(image.height))); return true
     }
     guard rendered else { throw ResearchError.invalidDimensions }
-    return try RGBImage(width: image.width, height: image.height, pixels: stride(from: 0, to: bytes.count, by: 4).map {
-        UInt32(bytes[$0+3]) << 24 | UInt32(bytes[$0]) << 16 | UInt32(bytes[$0+1]) << 8 | UInt32(bytes[$0+2])
-    })
+    let pixels: [UInt32] = stride(from: 0, to: bytes.count, by: 4).map { offset in
+        let alpha = UInt32(bytes[offset + 3]) << 24
+        let red = UInt32(bytes[offset]) << 16
+        let green = UInt32(bytes[offset + 1]) << 8
+        let blue = UInt32(bytes[offset + 2])
+        return alpha | red | green | blue
+    }
+    return try RGBImage(width: image.width, height: image.height, pixels: pixels)
 }
 public static func jpeg(_ image: RGBImage) throws -> Data {
     var bytes = [UInt8](); bytes.reserveCapacity(image.pixels.count*4)

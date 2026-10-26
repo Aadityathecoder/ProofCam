@@ -98,15 +98,19 @@ struct Report: Codable {
         }
     }
 }
-@main struct ProofCamResearchApp: App { var body: some Scene { WindowGroup { ContentView() } } }
-struct ContentView: View {
+@main struct ProofCamResearchApp: App { var body: some Scene { WindowGroup { CameraRootView() } } }
+struct ResearchView: View {
     @StateObject private var model = Model()
     @StateObject private var provenance = CaptureProvenance()
     @State private var importingEnrollment = false
     @State private var importingAppAttest = false
     @State private var attestedCapture: PendingCapture?
-    @State private var importing = false, screenshot = false, exporting = false, attested = false
-    @State private var rectangle = "", filename = "report.json"
+    @State private var importing = false
+    @State private var screenshot = false
+    @State private var exporting = false
+    @State private var attested = false
+    @State private var rectangle = ""
+    @State private var filename = "report.json"
     @State private var document = ExportFile(data: Data())
     @State private var exportType: UTType = .json
     var body: some View {
