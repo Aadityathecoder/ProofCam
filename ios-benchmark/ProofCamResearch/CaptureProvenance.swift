@@ -134,11 +134,8 @@ struct PendingCapture: Identifiable {
                     try data.write(to: photo, options: [.atomic, .completeFileProtection])
                     let source = try AppleImageCodec.decode(data).atLongEdge(1024, upscale: true)
                     let jpeg = try AppleImageCodec.jpeg(AdaptiveCandidate.embed(source, id: id))
-                    try jpeg.write(to: photo, options: [.atomic, .completeFileProtection])
-                    let finalBytes = try Data(contentsOf: photo)
-                    guard finalBytes == jpeg else { throw ProvenanceWire.Invalid.signature }
                     let key = try CaptureKey.load()
-                    let digest = SHA256.hash(data: finalBytes).map { String(format: "%02x", $0) }.joined()
+                    let digest = SHA256.hash(data: jpeg).map { String(format: "%02x", $0) }.joined()
                     let payload = try ProvenanceWire.offlineCameraRequest(id: id, fileSHA256: digest, session: session)
                     let keyID = SHA256.hash(data: key.publicKey.x963Representation).map { String(format: "%02x", $0) }.joined()
                     let input = try ProvenanceWire.signatureInput(payload: payload, keyID: keyID, purpose: "register")
@@ -146,8 +143,12 @@ struct PendingCapture: Identifiable {
                     let receipt = LocalCaptureReceipt(id: id, session: session, fileSHA256: digest,
                                                       publicKey: key.publicKey.x963Representation, signature: signature)
                     let signed = try receipt.request
+                    let receiptData = try JSONEncoder().encode(receipt)
+                    let finalBytes = try EmbeddedProof.embed(receiptData, in: jpeg)
+                    try finalBytes.write(to: photo, options: [.atomic, .completeFileProtection])
+                    guard try Data(contentsOf: photo) == finalBytes else { throw ProvenanceWire.Invalid.signature }
                     guard try receipt.verifies(finalBytes, request: signed) else { throw ProvenanceWire.Invalid.signature }
-                    try JSONEncoder().encode(receipt).write(to: folder.appendingPathComponent("receipt.json"), options: [.atomic, .completeFileProtection])
+                    try receiptData.write(to: folder.appendingPathComponent("receipt.json"), options: [.atomic, .completeFileProtection])
                     try signed.write(to: folder.appendingPathComponent("request.cbor"), options: [.atomic, .completeFileProtection])
                     let destination = root.appendingPathComponent(id, isDirectory: true)
                     try FileManager.default.moveItem(at: folder, to: destination)
@@ -156,7 +157,7 @@ struct PendingCapture: Identifiable {
                 refresh(); latestCapture = saved
                 if UserDefaults.standard.object(forKey: "proofcam.saveToPhotos") as? Bool ?? true {
                     await saveToPhotos(saved)
-                } else { status = "Signed and saved in ProofCam." }
+                } else { status = "Proof embedded and saved in ProofCam." }
 
             } catch {
                 refresh(); status = "Couldn’t sign this photo. Any saved image is kept in ProofCam; it wasn’t added to Photos."
@@ -174,7 +175,7 @@ struct PendingCapture: Identifiable {
             guard try receipt.verifies(data, request: Data(contentsOf: capture.request)) else { throw ProvenanceWire.Invalid.signature }
             let authorization = await PHPhotoLibrary.requestAuthorization(for: .addOnly)
             guard authorization == .authorized || authorization == .limited else {
-                status = "Signed and kept in ProofCam. Allow Photos access in Settings to save to your camera roll."
+                status = "Proof embedded and kept in ProofCam. Allow Photos access in Settings to save it to your camera roll."
                 notice = status; return
             }
             try await PHPhotoLibrary.shared().performChanges {
@@ -184,9 +185,9 @@ struct PendingCapture: Identifiable {
                 asset.addResource(with: .photo, data: data, options: options)
             }
             try Data().write(to: capture.folder.appendingPathComponent("photos-saved"), options: [.atomic, .completeFileProtection])
-            refresh(); status = "Signed and saved to Photos."
+            refresh(); status = "Proof embedded and saved to Photos."
         } catch {
-            status = "Signed photo kept in ProofCam. Saving to Photos failed; you can retry from the photo viewer."
+            status = "Protected photo kept in ProofCam. Saving to Photos failed; you can retry from the photo viewer."
             notice = status
         }
     }

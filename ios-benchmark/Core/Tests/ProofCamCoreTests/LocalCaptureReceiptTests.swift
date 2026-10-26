@@ -5,11 +5,12 @@ import CryptoKit
 
 final class LocalCaptureReceiptTests: XCTestCase {
     private let photo = Data("final JPEG bytes".utf8)
-    private func makeReceipt() throws -> LocalCaptureReceipt {
+    private func makeReceipt(for bytes: Data? = nil) throws -> LocalCaptureReceipt {
+        let signedPhoto = bytes ?? photo
         let key = P256.Signing.PrivateKey()
         let publicKey = key.publicKey.x963Representation
         let keyID = SHA256.hash(data: publicKey).map { String(format: "%02x", $0) }.joined()
-        let digest = SHA256.hash(data: photo).map { String(format: "%02x", $0) }.joined()
+        let digest = SHA256.hash(data: signedPhoto).map { String(format: "%02x", $0) }.joined()
         let id = String(repeating: "a", count: 32), session = String(repeating: "b", count: 32)
         let payload = try ProvenanceWire.offlineCameraRequest(id: id, fileSHA256: digest, session: session)
         let input = try ProvenanceWire.signatureInput(payload: payload, keyID: keyID, purpose: "register")
@@ -44,6 +45,21 @@ final class LocalCaptureReceiptTests: XCTestCase {
         let malformed = LocalCaptureReceipt(id: receipt.id, session: receipt.session, fileSHA256: receipt.fileSHA256,
                                            publicKey: Data(), signature: Data())
         XCTAssertThrowsError(try malformed.verifies(photo))
+    }
+    func testReceiptCanTravelInsideJPEG() throws {
+        let jpeg = Data([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x04, 0x01, 0x02,
+                         0xff, 0xda, 0x00, 0x02, 0x11, 0x22, 0xff, 0xd9])
+        let receipt = try makeReceipt(for: jpeg)
+        let encoded = try JSONEncoder().encode(receipt)
+        let carrying = try EmbeddedProof.embed(encoded, in: jpeg)
+        XCTAssertEqual(try EmbeddedProof.prooflessJPEG(carrying), jpeg)
+        XCTAssertEqual(try EmbeddedProof.extract(from: carrying), encoded)
+        XCTAssertTrue(try receipt.verifies(carrying))
+        XCTAssertThrowsError(try EmbeddedProof.embed(encoded, in: carrying))
+
+        var tampered = carrying
+        tampered[tampered.count - 3] ^= 1
+        XCTAssertFalse(try receipt.verifies(tampered))
     }
 }
 #endif

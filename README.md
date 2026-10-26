@@ -1,6 +1,6 @@
 # ProofCam
 
-ProofCam is an iPhone camera project that lets recipients check whether a photo matches a registered export and see which capture checks passed.
+ProofCam is an iPhone camera project that lets recipients check whether an original photo still matches the cryptographic proof embedded inside its JPEG.
 
 This folder is the project working directory. Product documentation, application code, backend code, and project tooling will live here as development proceeds.
 
@@ -25,5 +25,7 @@ The product brief and pilot scope describe the planned product. Implemented rese
 An [iPhone research port](ios-benchmark/README.md) is prepared for the available iPhone 16 Pro. Swift Debug and Release tests and raw-pixel cross-decoder checks pass; the unsigned Release app compiles against the iPhone simulator SDK. Physical iPhone validation remains pending. Physical iPhone validation is the next device milestone.
 
 The iPhone experiment defaults to an [adaptive tiled v3 watermark](ios-benchmark/ADAPTIVE-V3.md), with v1/v2 retained for comparison. It recovers all 125 marked host simulation cases, including the six previous v2 misses. The broader search is slower; device validation and product quality gates remain pending.
+
+Camera exports now contain two complementary layers: a resilient 128-bit identifier in the image signal and a signed SHA-256 manifest in a standards-compatible JPEG comment segment. The manifest hash excludes only its own container, so verification avoids a circular “hash inside itself” claim while still binding all JPEG image bytes. A separate JSON receipt remains exportable for compatibility, but it is no longer required to verify a new untouched ProofCam JPEG.
 
 A [local provenance infrastructure prototype](provenance/README.md) now adds admitted device keys, signed requests, atomic registration, development certificates and independent exact-file verification. The iPhone app includes a camera-only capture path with Secure Enclave signing and durable request export, pending Apple/device validation. Capture origin and absence of AI remain **unverified**; production signing remains unimplemented. An optional [App Attest validation layer](provenance/APP-ATTEST.md) now checks app-bound request evidence; live Apple qualification and full receipt/risk handling remain pending. Free Personal Team provisioning cannot activate App Attest.

@@ -10,11 +10,12 @@ import CryptoKit
     @Published var verified = false
     @Published var checking = false
     @Published var hasImportedReceipt = false
+    @Published var proofIsEmbedded = false
     private var data: Data?
     private var suppliedReceipt: LocalCaptureReceipt?
 
     func load(_ bytes: Data, captures: [PendingCapture]) {
-        data = nil; image = nil; verified = false
+        data = nil; image = nil; verified = false; proofIsEmbedded = false
         guard bytes.count <= 25 * 1024 * 1024 else { fail("This file is too large. Choose a photo smaller than 25 MB."); return }
         do { _ = try AppleImageCodec.decode(bytes) }
         catch { fail("Choose an opaque JPEG or PNG photo."); return }
@@ -35,32 +36,49 @@ import CryptoKit
         else { title = "Check a photo’s signature"; detail = "Choose a photo captured with ProofCam. Verification happens on your iPhone." }
     }
     func check(_ captures: [PendingCapture]) {
-        verified = false
+        verified = false; proofIsEmbedded = false
         guard let data else { title = "Signature ready"; detail = "Now choose the photo that belongs to this signature."; return }
         checking = true; defer { checking = false }
+        if let embedded = try? EmbeddedProof.extract(from: data),
+           embedded.count <= 4096,
+           let receipt = try? JSONDecoder().decode(LocalCaptureReceipt.self, from: embedded) {
+            do {
+                guard try receipt.verifies(data) else {
+                    fail("The embedded proof is intact, but the image bytes no longer match it."); return
+                }
+                proofIsEmbedded = true
+                success(local: false, embedded: true)
+            } catch { fail("The proof embedded in this photo is invalid or unsupported.") }
+            return
+        }
         if let suppliedReceipt {
             do {
                 guard try suppliedReceipt.verifies(data) else { fail("The photo does not match this signature. It may have been edited or re-encoded."); return }
-                success(local: false)
+                success(local: false, embedded: false)
             } catch { fail("The signature is invalid or unsupported.") }
             return
         }
-        let digest = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+        let comparable = (try? EmbeddedProof.prooflessJPEG(data)) ?? data
+        let digest = SHA256.hash(data: comparable).map { String(format: "%02x", $0) }.joined()
         for capture in captures where capture.hasRequest {
             guard let bytes = try? Data(contentsOf: capture.receipt), bytes.count <= 4096,
                   let receipt = try? JSONDecoder().decode(LocalCaptureReceipt.self, from: bytes), receipt.fileSHA256 == digest else { continue }
             do {
                 guard try receipt.verifies(data, request: Data(contentsOf: capture.request)) else { continue }
-                success(local: true); return
+                success(local: true, embedded: false); return
             } catch { continue }
         }
         title = "No matching signature found"
         detail = "No saved signature on this iPhone matches these exact bytes. Import the photo’s signature, or choose the original file if a shared copy was changed."
     }
     func fail(_ message: String) { verified = false; checking = false; title = "Unable to verify"; detail = message }
-    private func success(local: Bool) {
+    private func success(local: Bool, embedded: Bool) {
         verified = true; title = "Signature verified"
-        detail = local ? "This photo exactly matches a signed capture saved in ProofCam on this iPhone." : "This photo exactly matches the supplied signature. The signing key’s owner has not been independently verified."
+        if embedded {
+            detail = "The cryptographic proof carried inside this JPEG matches its image bytes. The signing key’s owner has not been independently verified."
+        } else {
+            detail = local ? "This photo exactly matches a signed capture saved in ProofCam on this iPhone." : "This photo exactly matches the supplied signature. The signing key’s owner has not been independently verified."
+        }
     }
     static func read(_ url: URL, limit: Int) throws -> Data {
         let access = url.startAccessingSecurityScopedResource(); defer { if access { url.stopAccessingSecurityScopedResource() } }
@@ -78,45 +96,72 @@ struct VerifyScreen: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 26) {
-                    HStack { Text("PROOFCAM").font(.system(size: 11, weight: .semibold)).tracking(3).foregroundStyle(.secondary); Spacer() }
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("A photo.\nIts signature.").font(.system(size: 42, weight: .semibold, design: .rounded)).tracking(-1.5)
-                        Text("See whether a photo matches its signed original.").font(.body).foregroundStyle(.secondary)
-                    }.frame(maxWidth: .infinity, alignment: .leading)
-                    if let image = model.image {
-                        Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 300).clipShape(RoundedRectangle(cornerRadius: 18))
-                    } else {
-                        RoundedRectangle(cornerRadius: 22).fill(.white.opacity(0.035)).frame(height: 210)
-                            .overlay { Image(systemName: "checkmark.shield").font(.system(size: 54, weight: .ultraLight)).foregroundStyle(.yellow) }
-                            .overlay { RoundedRectangle(cornerRadius: 22).stroke(.white.opacity(0.08)) }
+                VStack(alignment: .leading, spacing: 24) {
+                    ProofCamMark()
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Verify a photo")
+                            .font(.system(size: 38, weight: .bold))
+                            .tracking(-1.1)
+                        Text("Choose an original. ProofCam checks the signed proof carried inside it—privately, on this iPhone.")
+                            .font(.system(size: 17)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                     }
-                    VStack(alignment: .leading, spacing: 10) {
-                        Label(model.title, systemImage: model.verified ? "checkmark.seal.fill" : "info.circle")
-                            .font(.headline).foregroundStyle(model.verified ? .green : .white)
-                        Text(model.detail).font(.subheadline).foregroundStyle(.secondary)
-                        if model.verified {
-                            Text("A valid signature does not prove camera origin or that the photo is free of AI.")
-                                .font(.footnote).foregroundStyle(.secondary)
+                    if let image = model.image {
+                        Image(uiImage: image).resizable().scaledToFit().frame(maxWidth: .infinity, maxHeight: 310)
+                            .background(Color.black).clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    } else {
+                        RoundedRectangle(cornerRadius: 20, style: .continuous).fill(.white).frame(height: 210)
+                            .overlay {
+                                VStack(spacing: 14) {
+                                    Image(systemName: "checkmark.shield").font(.system(size: 44, weight: .light)).foregroundStyle(ProofCamTheme.blue)
+                                    Text("Your photo stays on this device").font(.subheadline.weight(.medium)).foregroundStyle(.secondary)
+                                }
+                            }
+                            .overlay { RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(ProofCamTheme.line) }
+                    }
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack(alignment: .top, spacing: 12) {
+                            Image(systemName: model.verified ? "checkmark.circle.fill" : "info.circle.fill")
+                                .font(.title2).foregroundStyle(model.verified ? ProofCamTheme.success : ProofCamTheme.blue)
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text(model.title).font(.headline).foregroundStyle(ProofCamTheme.ink)
+                                Text(model.detail).font(.subheadline).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                            }
                         }
-                    }.frame(maxWidth: .infinity, alignment: .leading)
+                        if model.proofIsEmbedded {
+                            Label("Embedded proof", systemImage: "shippingbox.fill")
+                                .font(.caption.weight(.semibold)).foregroundStyle(ProofCamTheme.success)
+                                .padding(.horizontal, 10).padding(.vertical, 6)
+                                .background(ProofCamTheme.success.opacity(0.1), in: Capsule())
+                        }
+                        if model.verified {
+                            Divider()
+                            Text("This confirms integrity, not whether the pictured event is true.")
+                                .font(.caption).foregroundStyle(.secondary)
+                        }
+                    }.padding(18).frame(maxWidth: .infinity, alignment: .leading)
+                        .background(.white, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                        .overlay { RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(ProofCamTheme.line) }
                     VStack(spacing: 12) {
                         PhotosPicker(selection: $selected, matching: .images, preferredItemEncoding: .current) {
-                            Label("Choose photo", systemImage: "photo").frame(maxWidth: .infinity).padding(.vertical, 8)
-                        }.buttonStyle(.borderedProminent).tint(.yellow).foregroundStyle(.black)
+                            Label("Choose from Photos", systemImage: "photo").frame(maxWidth: .infinity).padding(.vertical, 9)
+                        }.buttonStyle(.borderedProminent).tint(ProofCamTheme.blue)
                         Button { signatureImport = false; importing = true } label: {
-                            Label("Choose original from Files", systemImage: "folder").frame(maxWidth: .infinity).padding(.vertical, 8)
-                        }.buttonStyle(.bordered)
-                        Button("Import signature") { signatureImport = true; importing = true }.font(.subheadline).padding(.top, 4)
+                            Label("Choose from Files", systemImage: "folder").frame(maxWidth: .infinity).padding(.vertical, 9)
+                        }.buttonStyle(.bordered).tint(ProofCamTheme.ink)
+                        Button("Use a separate proof file") { signatureImport = true; importing = true }.font(.subheadline).padding(.top, 2)
                         if model.hasImportedReceipt {
-                            Button("Remove imported signature") { model.clearReceipt(captures: provenance.pending) }.font(.caption)
+                            Button("Remove separate proof") { model.clearReceipt(captures: provenance.pending) }.font(.caption)
                         }
                     }.disabled(model.checking)
-                    Label("Checked on your device", systemImage: "lock")
-                        .font(.caption).foregroundStyle(.secondary)
-                }.padding(26)
-            }.background(Color(white: 0.035)).navigationTitle("Verify").navigationBarTitleDisplayMode(.inline)
+                    HStack(spacing: 18) {
+                        Label("On-device", systemImage: "iphone")
+                        Label("No upload", systemImage: "icloud.slash")
+                        Label("SHA-256", systemImage: "number")
+                    }.font(.caption2.weight(.medium)).foregroundStyle(.secondary).frame(maxWidth: .infinity)
+                }.padding(.horizontal, 22).padding(.top, 18).padding(.bottom, 32)
+            }.background(ProofCamTheme.canvas).navigationBarHidden(true)
         }
+        .preferredColorScheme(.light)
         .onChange(of: selected) { _, item in
             guard let item else { return }
             Task {

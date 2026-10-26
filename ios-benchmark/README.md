@@ -16,13 +16,13 @@ Xcode and a free Apple Account support personal device testing; free provisionin
 
 ## App experience
 
-First launch presents an introduction. After completion, the app opens directly to Capture. The bottom bar switches between Capture, Verify and Settings. Photos are signed before being added to the camera roll; Settings controls automatic saving, camera grid and haptics. The recent-photo thumbnail opens the local library and signature-sharing actions. See [camera experience and validation limits](../docs/08-camera-experience.md).
+First launch presents a concise capture → protect → verify introduction. After completion, the app opens directly to Capture. The bottom bar switches between Capture, Verify and Settings. Photos receive an embedded signed proof before being added to the camera roll; Settings controls automatic saving, camera grid and haptics. The recent-photo thumbnail opens the local library and sharing actions. See [camera experience and validation limits](../docs/08-camera-experience.md).
 
 Simulator supports the interface and file selection, but actual capture/signing requires a physical iPhone. The existing watermark export remains capped at a 1024-pixel long edge.
 
 ## Capture provenance experiment
 
-The **Capture** tab captures directly from the camera and binds the finalized watermarked JPEG to a Secure Enclave signature. It saves pending JPEG/request pairs across app launches. Enrollment, submission to the local development service, and independent verification follow the [provenance instructions](../provenance/README.md). There is no automatic mobile upload, server-attested camera-origin claim, or proof of absence of AI. The optional [App Attest integration](../provenance/APP-ATTEST.md) adds server checks on app-bound request evidence, requires eligible Apple provisioning, and stays inactive in the default free build. This path has only been syntax-checked here; run the Mac/iPhone checks before relying on it.
+The **Capture** tab captures directly from the camera and binds the finalized watermarked JPEG to a Secure Enclave signature. The signed receipt is carried inside the JPEG itself, in addition to the recoverable pixel watermark and an optional separate receipt export. Verification removes only the ProofCam receipt segment before recomputing SHA-256, then validates the P-256 signature; this avoids a circular self-hash. It saves pending JPEG/request pairs across app launches. Enrollment, submission to the local development service, and independent verification follow the [provenance instructions](../provenance/README.md). There is no automatic mobile upload, server-attested camera-origin claim, or proof of absence of AI. The optional [App Attest integration](../provenance/APP-ATTEST.md) adds server checks on app-bound request evidence, requires eligible Apple provisioning, and stays inactive in the default free build. Run the Mac/iPhone checks before relying on this path.
 
 ## Legacy research workflow
 

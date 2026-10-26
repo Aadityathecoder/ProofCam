@@ -3,6 +3,31 @@ import AVFoundation
 import UIKit
 import CryptoKit
 
+enum ProofCamTheme {
+    static let ink = Color(red: 0.055, green: 0.075, blue: 0.12)
+    static let blue = Color(red: 0.13, green: 0.32, blue: 0.94)
+    static let canvas = Color(red: 0.965, green: 0.969, blue: 0.956)
+    static let line = Color.black.opacity(0.08)
+    static let success = Color(red: 0.04, green: 0.48, blue: 0.31)
+}
+
+struct ProofCamMark: View {
+    var light = false
+    var body: some View {
+        HStack(spacing: 8) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(light ? Color.white : ProofCamTheme.ink)
+                    .frame(width: 28, height: 28)
+                Image(systemName: "checkmark")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(light ? ProofCamTheme.ink : .white)
+            }
+            Text("ProofCam").font(.system(size: 17, weight: .semibold))
+        }
+    }
+}
+
 final class CameraSession: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     let session = AVCaptureSession()
     private let queue = DispatchQueue(label: "ProofCam.camera")
@@ -175,7 +200,7 @@ struct CameraRootView: View {
             } else {
                 IntroductionScreen { introductionCompleted = true }
             }
-        }.tint(.yellow).preferredColorScheme(.dark)
+        }.tint(ProofCamTheme.blue)
     }
 }
 
@@ -195,11 +220,10 @@ struct CaptureScreen: View {
                 HStack {
                     Button { camera.flash.toggle() } label: {
                         Image(systemName: camera.flash ? "bolt.fill" : "bolt.slash")
-                            .foregroundStyle(camera.flash ? .yellow : .white).frame(width: 44, height: 44)
+                            .foregroundStyle(camera.flash ? .white : .white.opacity(0.72)).frame(width: 44, height: 44)
                     }.disabled(!camera.hasFlash || working).accessibilityLabel(camera.flash ? "Turn flash off" : "Turn flash on")
                     Spacer()
-                    Label("PROOFCAM", systemImage: "shield.lefthalf.filled")
-                        .font(.system(size: 12, weight: .semibold, design: .rounded)).tracking(2)
+                    ProofCamMark(light: true)
                     Spacer()
                     Text("4:3").font(.system(size: 13, weight: .medium)).frame(width: 44, height: 44)
                         .accessibilityLabel("Photo aspect ratio, four by three")
@@ -235,8 +259,9 @@ struct CaptureScreen: View {
                             ForEach([1, 2], id: \.self) { value in
                                 Button { camera.setZoom(CGFloat(value)) } label: {
                                     Text("\(value)×").font(.system(size: 14, weight: .semibold))
-                                        .foregroundStyle(Int(camera.zoom.rounded()) == value ? .yellow : .white)
-                                        .frame(width: 42, height: 42).background(.black.opacity(0.55), in: Circle())
+                                        .foregroundStyle(.white)
+                                        .frame(width: 42, height: 42)
+                                        .background(Int(camera.zoom.rounded()) == value ? .white.opacity(0.28) : .black.opacity(0.46), in: Circle())
                                 }.disabled(!camera.ready || working).accessibilityLabel("Zoom \(value) times")
                             }
                         }.padding(.bottom, 18)
@@ -245,7 +270,8 @@ struct CaptureScreen: View {
                 .frame(height: min(geometry.size.width * 4 / 3, max(220, geometry.size.height - 225)))
                 .clipped()
                 VStack(spacing: 15) {
-                    Text("PHOTO").font(.system(size: 13, weight: .semibold)).tracking(1.5).foregroundStyle(.yellow)
+                    Label("Proof embedded", systemImage: "lock.fill")
+                        .font(.system(size: 12, weight: .medium)).foregroundStyle(.white.opacity(0.72))
                     HStack {
                         Button { library = true } label: {
                             Group {
@@ -271,7 +297,7 @@ struct CaptureScreen: View {
                                 .frame(width: 48, height: 48).background(.white.opacity(0.1), in: Circle())
                         }.disabled(!camera.ready || working).accessibilityLabel("Switch camera")
                     }.padding(.horizontal, 30)
-                    Text(working ? "Signing and saving…" : "Every photo. Signed on your iPhone.")
+                    Text(working ? "Embedding proof and signing…" : "The proof travels inside the photo.")
                         .font(.caption2).foregroundStyle(.white.opacity(0.5))
                 }.padding(.top, 15)
                 Spacer(minLength: 0)
@@ -337,7 +363,7 @@ struct CaptureDetail: View {
                         }
                     }.font(.subheadline)
                     ShareLink(item: capture.request) { Text("Export registration request") }.font(.caption)
-                    Text("The signature binds the exact saved photo. It does not prove camera origin or the absence of AI.")
+                    Text("The signed proof is embedded inside this JPEG, so it travels with the original. It does not prove that the scene itself is truthful.")
                         .font(.footnote).foregroundStyle(.secondary).multilineTextAlignment(.center).padding(.horizontal)
                 } else { Text("This photo was retained after an interrupted capture. It has not been saved to Photos as a signed image.").font(.footnote).foregroundStyle(.secondary) }
             }.padding(.bottom, 24)
