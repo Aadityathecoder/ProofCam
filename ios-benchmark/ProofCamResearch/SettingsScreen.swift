@@ -11,10 +11,10 @@ struct SettingsScreen: View {
             Form {
                 Section {
                     HStack(spacing: 16) {
-                        Image(systemName: "checkmark").font(.system(size: 23, weight: .bold)).foregroundStyle(.white)
-                            .frame(width: 54, height: 54).background(ProofCamTheme.ink, in: RoundedRectangle(cornerRadius: 15, style: .continuous))
+                        ZStack { RoundedRectangle(cornerRadius: 14, style: .continuous).fill(ProofCamTheme.ink); ProofWorkshopIllustration(compact: true).padding(7) }
+                            .frame(width: 54, height: 54)
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("ProofCam").font(.title2.bold())
+                            Text("The proof workshop").font(.system(.title3, design: .serif).weight(.bold))
                             Text("Proof that travels with the photo.").font(.subheadline).foregroundStyle(.secondary)
                         }
                     }.padding(.vertical, 8)
@@ -51,9 +51,8 @@ struct SettingsScreen: View {
                         .font(.footnote).foregroundStyle(.secondary)
                 }
             }.scrollContentBackground(.hidden).background(ProofCamTheme.canvas)
-                .navigationTitle("Settings").tint(ProofCamTheme.blue)
+                .navigationTitle("Settings").tint(ProofCamTheme.accent)
         }
-        .preferredColorScheme(.light)
         .sheet(isPresented: $showingGuide) { IntroductionScreen(completionTitle: "Done") { showingGuide = false } }
     }
 }
@@ -84,20 +83,14 @@ struct IntroductionScreen: View {
                 ForEach(pages.indices, id: \.self) { index in
                     ScrollView {
                         VStack(alignment: .leading, spacing: 24) {
-                            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                                .fill(index == 1 ? ProofCamTheme.ink : .white)
-                                .frame(height: 268)
-                                .overlay(alignment: .bottomLeading) {
-                                    Image(systemName: pages[index].symbol)
-                                        .font(.system(size: 76, weight: .light))
-                                        .foregroundStyle(index == 1 ? .white : ProofCamTheme.blue)
-                                        .padding(30)
-                                }
-                                .overlay { RoundedRectangle(cornerRadius: 28, style: .continuous).stroke(ProofCamTheme.line) }
-                            Text(pages[index].eyebrow).font(.system(size: 11, weight: .bold)).tracking(1.8).foregroundStyle(ProofCamTheme.blue)
-                            Text(pages[index].title).font(.system(size: 39, weight: .bold)).tracking(-1.2).fixedSize(horizontal: false, vertical: true)
-                            Text(pages[index].body).font(.system(size: 17)).foregroundStyle(ProofCamTheme.ink.opacity(0.84)).fixedSize(horizontal: false, vertical: true)
-                            Text(pages[index].note).font(.system(size: 14)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 20, style: .continuous).fill(ProofCamTheme.paper)
+                                ProofWorkshopIllustration().padding(12)
+                            }.frame(height: 250).overlay { RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(ProofCamTheme.line) }
+                            WorkshopEyebrow(text: pages[index].eyebrow)
+                            Text(pages[index].title).font(.system(.largeTitle, design: .serif).weight(.bold)).tracking(-0.8).fixedSize(horizontal: false, vertical: true)
+                            Text(pages[index].body).font(.body).foregroundStyle(ProofCamTheme.ink.opacity(0.84)).fixedSize(horizontal: false, vertical: true)
+                            Text(pages[index].note).font(.subheadline).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                         }.frame(maxWidth: 500).padding(.horizontal, 28).padding(.bottom, 24)
                     }.tag(index)
                 }
@@ -113,10 +106,12 @@ struct IntroductionScreen: View {
                     else { withAnimation { page += 1 } }
                 } label: {
                     HStack { Spacer(); Text(page == pages.count - 1 ? completionTitle : "Continue").fontWeight(.semibold); Spacer(); Image(systemName: "arrow.right") }
-                        .padding(.vertical, 12)
-                }.buttonStyle(.borderedProminent).tint(ProofCamTheme.blue)
+                        .padding(.horizontal, 20).frame(maxWidth: .infinity, minHeight: 56)
+                        .background(ProofCamTheme.blue, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .foregroundStyle(.white)
+                }.buttonStyle(.plain)
                 Text("No account. Photos are processed on your device.").font(.caption2).foregroundStyle(.secondary)
             }.padding(.horizontal, 28).padding(.bottom, 24)
-        }.background(ProofCamTheme.canvas).foregroundStyle(ProofCamTheme.ink).preferredColorScheme(.light)
+        }.background(ProofCamTheme.canvas).foregroundStyle(ProofCamTheme.ink)
     }
 }
