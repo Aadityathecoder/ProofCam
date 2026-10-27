@@ -302,6 +302,9 @@ struct CaptureScreen: View {
     @State private var library = false
     @State private var focusPoint: CGPoint?
     @State private var focusToken = 0
+    @State private var shotCount = 0
+    @State private var outcome: CaptureOutcome?
+    @State private var openLibraryAfterOutcome = false
     @AppStorage("proofcam.cameraGrid") private var showGrid = false
     @AppStorage("proofcam.shutterHaptics") private var shutterHaptics = true
     private var working: Bool { camera.takingPhoto || provenance.busy }
@@ -331,8 +334,6 @@ struct CaptureScreen: View {
                 ZStack {
                     CameraPreview(camera: camera) { point in
                         focusPoint = point; focusToken += 1
-                        let token = focusToken
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.3) { if focusToken == token { focusPoint = nil } }
                     }
                     if showGrid && camera.ready {
                         GeometryReader { grid in
@@ -380,7 +381,27 @@ struct CaptureScreen: View {
                         }.padding(.bottom, 16)
                     } }
                 }
+                .task(id: focusToken) {
+                    guard focusPoint != nil else { return }
+                    try? await Task.sleep(for: .milliseconds(1300))
+                    if !Task.isCancelled { focusPoint = nil }
+                }
+                .overlay {
+                    if working {
+                        ZStack {
+                            Color.black.opacity(0.28)
+                            signingCard
+                        }.transition(.opacity)
+                    }
+                }
                 .animation(reduceMotion ? nil : .easeOut(duration: 0.2), value: focusToken)
+                .animation(reduceMotion ? nil : .smooth(duration: 0.3), value: working)
+                .keyframeAnimator(initialValue: 0.0, trigger: shotCount) { content, opacity in
+                    content.overlay { Color.white.opacity(opacity).allowsHitTesting(false) }
+                } keyframes: { _ in
+                    LinearKeyframe(reduceMotion ? 0 : 0.85, duration: 0.04)
+                    CubicKeyframe(0, duration: 0.32)
+                }
                 .frame(height: min(geometry.size.width * 4 / 3, max(220, geometry.size.height - 200)))
                 .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .padding(.horizontal, 12)
@@ -403,16 +424,19 @@ struct CaptureScreen: View {
                                 .padding(3).background(ProofCamTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                                 .shadow(color: .black.opacity(0.08), radius: 6, y: 2)
                                 .rotationEffect(.degrees(-3))
+                                .id(provenance.pending.first?.id)
+                                .transition(reduceMotion ? .opacity : .scale(scale: 0.5).combined(with: .opacity))
                         }.accessibilityLabel("View captured photos")
+                            .animation(reduceMotion ? nil : .spring(response: 0.45, dampingFraction: 0.62), value: provenance.pending.first?.id)
                         Spacer()
                         Button {
-                            if shutterHaptics { UIImpactFeedbackGenerator(style: .light).impactOccurred() }
                             camera.takePhoto { provenance.captured($0) }
                         } label: {
                             ZStack {
                                 Circle().stroke(ProofCamTheme.text, lineWidth: 3).frame(width: 78, height: 78)
                                 Circle().fill(ProofCamTheme.text.opacity(canCapture ? 1 : 0.32)).frame(width: 64, height: 64)
-                                if working { ProgressView().tint(ProofCamTheme.background) }
+                                    .scaleEffect(working ? 0.78 : 1)
+                                    .animation(reduceMotion ? nil : .spring(response: 0.35, dampingFraction: 0.7), value: working)
                             }
                         }.buttonStyle(ShutterButtonStyle()).disabled(!canCapture).accessibilityLabel(working ? "Signing photo" : "Take signed photo")
                         Spacer()
@@ -431,14 +455,45 @@ struct CaptureScreen: View {
         .onChange(of: scenePhase) { _, value in if value == .active && active { camera.start() } else { camera.stop() } }
         .onDisappear { camera.stop() }
         .sheet(isPresented: $library) { CaptureLibrary(provenance: provenance) }
-        .sheet(isPresented: Binding(get: { provenance.notice != nil }, set: { if !$0 { provenance.notice = nil } })) {
-            CaptureOutcomeSheet(message: provenance.notice ?? "", latest: provenance.pending.first) {
-                provenance.notice = nil
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) { library = true }
-            } done: { provenance.notice = nil }
+        .onChange(of: provenance.notice) { _, message in
+            guard let message else { return }
+            outcome = CaptureOutcome(message: message, capture: provenance.pending.first)
+            provenance.notice = nil
+        }
+        .onChange(of: camera.takingPhoto) { _, taking in if taking { shotCount += 1 } }
+        .sheet(item: $outcome, onDismiss: {
+            if openLibraryAfterOutcome { openLibraryAfterOutcome = false; library = true }
+        }) { result in
+            CaptureOutcomeSheet(outcome: result) { openLibraryAfterOutcome = true; outcome = nil } done: { outcome = nil }
                 .presentationDetents([.medium]).presentationDragIndicator(.visible)
         }
+        .sensoryFeedback(trigger: camera.takingPhoto) { _, taking in
+            shutterHaptics && taking ? .impact(weight: .light) : nil
+        }
+        .sensoryFeedback(trigger: outcome?.id) { _, new in
+            guard shutterHaptics, new != nil, let outcome else { return nil }
+            return outcome.succeeded ? .success : .warning
+        }
     }
+
+    private var signingCard: some View {
+        VStack(spacing: 12) {
+            RegistrationAlignment(phase: .searching, size: 88)
+            Text("Embedding proof and signing…").font(.subheadline.weight(.medium)).foregroundStyle(ProofCamTheme.text)
+        }
+        .padding(.horizontal, 28).padding(.vertical, 22)
+        .background(ProofCamTheme.surface.opacity(0.96), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay { RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(ProofCamTheme.border) }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// What happened when a capture finished, shown in a sheet instead of a generic alert.
+struct CaptureOutcome: Identifiable {
+    let id = UUID()
+    let message: String
+    let capture: PendingCapture?
+    var succeeded: Bool { message.hasPrefix("Proof embedded") }
 }
 
 private struct ShutterButtonStyle: ButtonStyle {
@@ -462,30 +517,35 @@ private struct ViewfinderCorners: View {
     }
 }
 
-/// Replaces the generic alert after a capture with the photo and its outcome.
 private struct CaptureOutcomeSheet: View {
-    let message: String
-    let latest: PendingCapture?
+    let outcome: CaptureOutcome
     let viewPhotos: () -> Void
     let done: () -> Void
-    private var succeeded: Bool { message.hasPrefix("Proof embedded") }
     var body: some View {
-        VStack(spacing: 20) {
-            HStack(alignment: .center, spacing: 16) {
+        VStack(spacing: 24) {
+            HStack(alignment: .center, spacing: 18) {
                 Group {
-                    if let latest, let image = UIImage(contentsOfFile: latest.jpeg.path) {
+                    if let capture = outcome.capture, let image = UIImage(contentsOfFile: capture.jpeg.path) {
                         Image(uiImage: image).resizable().scaledToFill()
                     } else { ProofCamTheme.surfaceMuted }
-                }.frame(width: 84, height: 112).clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                }.frame(width: 96, height: 128).clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                     .padding(4).background(ProofCamTheme.surface, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                     .shadow(color: .black.opacity(0.1), radius: 8, y: 3).rotationEffect(.degrees(-3))
-                VStack(alignment: .leading, spacing: 6) {
-                    Label(succeeded ? "Signed" : "Needs attention", systemImage: succeeded ? "checkmark.circle" : "exclamationmark.circle")
-                        .font(.caption.weight(.medium)).foregroundStyle(succeeded ? ProofCamTheme.success : ProofCamTheme.warning)
-                    Text(message).font(ProofCamType.display(20, relativeTo: .headline)).foregroundStyle(ProofCamTheme.text)
-                        .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 10) {
+                        RegistrationAlignment(phase: outcome.succeeded ? .aligned : .offset, size: 40)
+                        Text(outcome.succeeded ? "Signed" : "Needs attention").font(.footnote.weight(.medium))
+                            .foregroundStyle(outcome.succeeded ? ProofCamTheme.success : ProofCamTheme.warning)
+                    }
+                    Text(outcome.message).font(ProofCamType.display(20, relativeTo: .headline)).foregroundStyle(ProofCamTheme.text)
+                        .fixedSize(horizontal: false, vertical: true).accessibilityAddTraits(.isHeader)
                 }
                 Spacer(minLength: 0)
+            }
+            if outcome.succeeded {
+                Text("The proof is inside the JPEG, so it travels with the original. Share the original file to keep them together.")
+                    .font(.footnote).foregroundStyle(ProofCamTheme.secondary).frame(maxWidth: .infinity, alignment: .leading)
             }
             VStack(spacing: 12) {
                 Button("View photos", action: viewPhotos).buttonStyle(PrimaryButtonStyle())

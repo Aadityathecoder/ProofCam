@@ -6,6 +6,7 @@ struct SettingsScreen: View {
     @AppStorage("proofcam.shutterHaptics") private var shutterHaptics = true
     @AppStorage("proofcam.saveToPhotos") private var saveToPhotos = true
     @State private var showingGuide = false
+    @State private var showingLab = false
     var body: some View {
         NavigationStack {
             Form {
@@ -30,9 +31,11 @@ struct SettingsScreen: View {
                     Text("Signed copies always stay in ProofCam. When enabled, photos are also added to your camera roll. You can save them manually from the photo viewer at any time.")
                 }
                 Section {
-                    LabeledContent("Photo signing") {
+                    HStack {
+                        Text("Photo signing")
+                        Spacer()
                         Label("Always on", systemImage: "checkmark.circle").foregroundStyle(ProofCamTheme.success)
-                    }
+                    }.accessibilityElement(children: .combine)
                 } header: { Text("Signatures") } footer: {
                     Text("Every completed JPEG carries its signed SHA-256 proof inside the file. The private key stays protected by your iPhone’s Secure Enclave. This detects changes; it does not decide whether a scene is truthful.")
                 }
@@ -44,6 +47,16 @@ struct SettingsScreen: View {
                     LabeledContent("Photo uploads", value: "None")
                 }
                 Section {
+                    Button { showingLab = true } label: {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Research lab")
+                            Text("Watermark benchmarks, screenshot recovery and JSON export").font(.footnote).foregroundStyle(ProofCamTheme.secondary)
+                        }
+                    }
+                } header: { Text("Research") } footer: {
+                    Text("For testing how watermarks survive re-saving. Results are measurements, not proof of authenticity.")
+                }
+                Section {
                     LabeledContent("Version", value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.1")
                 }
             }
@@ -52,6 +65,7 @@ struct SettingsScreen: View {
             .navigationTitle("Settings").tint(ProofCamTheme.accent)
         }
         .sheet(isPresented: $showingGuide) { IntroductionScreen(completionTitle: "Done") { showingGuide = false } }
+        .sheet(isPresented: $showingLab) { ResearchView() }
     }
 }
 

@@ -21,6 +21,7 @@
 		C8FD0B7CB2BDE843077E88B6 /* ProofCamResearch/AppAttestProvenance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A3E4B17C5D88BDD2466A80A /* ProofCamResearch/AppAttestProvenance.swift */; };
 		DADAE2B0DADDAB25F4B27F45 /* Core/Sources/ProofCamCore/TiledCandidate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73DE32D8E9BD5DE496075A82 /* Core/Sources/ProofCamCore/TiledCandidate.swift */; };
 		E12758713DDE12C5DA3C8F03 /* Core/Sources/ProofCamCore/LocalCaptureReceipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A529787C67D6E61AAEC29E9 /* Core/Sources/ProofCamCore/LocalCaptureReceipt.swift */; };
+		8A46D735FD6CF175D134D76E /* ProofCamResearch/RegistrationAlignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29937530EC3C4A9491C9EB31 /* ProofCamResearch/RegistrationAlignment.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +40,7 @@
 		C3C4F7B7EE68FBC75A33861C /* Core/Sources/ProofCamCore/GrayPlane.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Sources/ProofCamCore/GrayPlane.swift; sourceTree = "<group>"; };
 		C8354FFE6822D03A3CE46DFC /* Core/Sources/ProofCamCore/ProvenanceWire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Sources/ProofCamCore/ProvenanceWire.swift; sourceTree = "<group>"; };
 		E974BBA806CB2BAFD0EB7028 /* Core/Sources/ProofCamCore/AdaptiveCandidate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Sources/ProofCamCore/AdaptiveCandidate.swift; sourceTree = "<group>"; };
+		29937530EC3C4A9491C9EB31 /* ProofCamResearch/RegistrationAlignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProofCamResearch/RegistrationAlignment.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +69,7 @@
 				1D600960E5542BB04E951D7B /* ProofCamResearch/CameraScreen.swift */,
 				3E5FAAE9AA374C24CAC3157E /* ProofCamResearch/SettingsScreen.swift */,
 				C133981EC9E728DA4356691F /* ProofCamResearch/VerifyScreen.swift */,
+				29937530EC3C4A9491C9EB31 /* ProofCamResearch/RegistrationAlignment.swift */,
 				8A529787C67D6E61AAEC29E9 /* Core/Sources/ProofCamCore/LocalCaptureReceipt.swift */,
 				8C1009065D285E9ABAF3861B /* ProofCamResearch/CaptureProvenance.swift */,
 				6A3E4B17C5D88BDD2466A80A /* ProofCamResearch/AppAttestProvenance.swift */,
@@ -106,7 +109,8 @@
 		244210E48437B6556980A702 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1600;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2660;
 			};
 			buildConfigurationList = 76F8DEC3DFE0BDB465198890 /* Build configuration list for PBXProject "ProofCamResearch" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -135,6 +139,7 @@
 				6D0646800F167FF77B3C7E66 /* ProofCamResearch/CameraScreen.swift in Sources */,
 				9BF61BFD90D4D9EF5E278E8A /* ProofCamResearch/SettingsScreen.swift in Sources */,
 				8459FF819AABB4982CFA3DF1 /* ProofCamResearch/VerifyScreen.swift in Sources */,
+				8A46D735FD6CF175D134D76E /* ProofCamResearch/RegistrationAlignment.swift in Sources */,
 				E12758713DDE12C5DA3C8F03 /* Core/Sources/ProofCamCore/LocalCaptureReceipt.swift in Sources */,
 				C7ED9D3B9CC9DB2D1B9D9C2E /* ProofCamResearch/CaptureProvenance.swift in Sources */,
 				C8FD0B7CB2BDE843077E88B6 /* ProofCamResearch/AppAttestProvenance.swift in Sources */,
@@ -154,9 +159,40 @@
 		0B0C687DF8B6B8DC790B519C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEVELOPMENT_TEAM = CSB2LL98D5;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
@@ -166,10 +202,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(PROOFCAM_APP_ATTEST_ENTITLEMENTS)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9755649498;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ProofCam;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Take photos and sign them on this iPhone.";
@@ -180,7 +216,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.a4maan.proofcam.research;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aadithiya.proofcam.research;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROOFCAM_APP_ATTEST_ENABLED = NO;
 				PROOFCAM_APP_ATTEST_ENTITLEMENTS = "";
@@ -195,9 +231,41 @@
 		73EBF6644258C120893E685D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEVELOPMENT_TEAM = CSB2LL98D5;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -207,10 +275,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(PROOFCAM_APP_ATTEST_ENTITLEMENTS)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9755649498;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ProofCam;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Take photos and sign them on this iPhone.";
@@ -221,7 +289,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MARKETING_VERSION = 0.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.a4maan.proofcam.research;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aadithiya.proofcam.research;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROOFCAM_APP_ATTEST_ENABLED = NO;
 				PROOFCAM_APP_ATTEST_ENTITLEMENTS = "";

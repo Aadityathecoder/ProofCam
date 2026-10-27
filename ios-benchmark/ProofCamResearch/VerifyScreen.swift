@@ -116,6 +116,19 @@ struct VerifyScreen: View {
     @State private var selected: PhotosPickerItem?
     @State private var importing = false
     @State private var signatureImport = false
+    @AppStorage("proofcam.shutterHaptics") private var haptics = true
+    private var alignmentPhase: RegistrationAlignment.Phase {
+        if model.checking { return .searching }
+        switch model.outcome {
+        case .verified: return .aligned
+        case .mismatch: return .offset
+        default: return .idle
+        }
+    }
+    private var differingCount: Int? {
+        guard let file = model.fileDigest, let expected = model.expectedDigest else { return nil }
+        return zip(file, expected).filter { $0 != $1 }.count + abs(file.count - expected.count)
+    }
     private var showingResult: Bool {
         switch model.outcome { case .idle, .receiptReady: return model.checking; default: return true }
     }
@@ -126,6 +139,14 @@ struct VerifyScreen: View {
             }
             .background(ProofCamTheme.background).navigationBarHidden(true)
             .animation(.easeOut(duration: 0.25), value: model.outcome)
+        }
+        .sensoryFeedback(trigger: model.outcome) { _, new in
+            guard haptics else { return nil }
+            switch new {
+            case .verified: return .success
+            case .mismatch, .failed: return .warning
+            default: return nil
+            }
         }
         .onChange(of: selected) { _, item in
             guard let item else { return }
@@ -250,6 +271,11 @@ struct VerifyScreen: View {
                         }
                     }
                     .clipped().accessibilityHidden(true)
+                    .overlay(alignment: .bottomTrailing) {
+                        RegistrationAlignment(phase: alignmentPhase, size: 60)
+                            .padding(10).background(ProofCamTheme.background.opacity(0.95), in: Circle())
+                            .padding(14)
+                    }
                 Button { model.reset() } label: {
                     Image(systemName: "chevron.left").font(.system(size: 15, weight: .semibold))
                         .foregroundStyle(ProofCamTheme.onPrimary).frame(width: 36, height: 36)
@@ -269,6 +295,7 @@ struct VerifyScreen: View {
                         Text(model.detail).font(.body).foregroundStyle(ProofCamTheme.secondary).fixedSize(horizontal: false, vertical: true)
                     }
                 }.accessibilityElement(children: .combine)
+                    .reveal(0)
 
                 if !records.isEmpty {
                     VStack(spacing: 0) {
@@ -276,6 +303,7 @@ struct VerifyScreen: View {
                     }
                     .overlay(alignment: .top) { Rectangle().fill(ProofCamTheme.border).frame(height: 1) }
                     .padding(.top, 24)
+                    .reveal(1)
                 }
 
                 if let fileDigest = model.fileDigest, let expected = model.expectedDigest {
@@ -283,7 +311,12 @@ struct VerifyScreen: View {
                         Text("SHA-256 fingerprints").font(.footnote.weight(.medium)).foregroundStyle(ProofCamTheme.secondary)
                         DigestLine(label: "In proof", digest: expected, reference: expected)
                         DigestLine(label: "This file", digest: fileDigest, reference: expected)
-                    }.padding(.top, 24)
+                        if let differingCount {
+                            Text(differingCount == 0 ? "All \(expected.count) characters match." : "\(differingCount) of \(expected.count) characters differ.")
+                                .font(.footnote.weight(.medium)).foregroundStyle(differingCount == 0 ? ProofCamTheme.success : ProofCamTheme.warning)
+                                .padding(.top, 2)
+                        }
+                    }.padding(.top, 24).reveal(2)
                 }
 
                 VStack(alignment: .leading, spacing: 0) {
@@ -292,10 +325,10 @@ struct VerifyScreen: View {
                     ForEach(confirms, id: \.self) { MeaningLine(text: $0, muted: false) }
                     Text("Doesn’t confirm").font(.footnote.weight(.medium)).foregroundStyle(ProofCamTheme.secondary).padding(.top, 16).padding(.bottom, 2)
                     ForEach(doesNotConfirm, id: \.self) { MeaningLine(text: $0, muted: true) }
-                }.padding(.top, 32).opacity(model.checking ? 0 : 1)
+                }.padding(.top, 32).opacity(model.checking ? 0 : 1).reveal(3)
 
                 Button("Check another photo") { model.reset() }.buttonStyle(PrimaryButtonStyle())
-                    .padding(.top, 32).disabled(model.checking)
+                    .padding(.top, 32).disabled(model.checking).reveal(4)
             }
             .foregroundStyle(ProofCamTheme.text)
             .padding(.horizontal, 20).padding(.top, 20).padding(.bottom, 40)
@@ -340,12 +373,18 @@ private struct DigestLine: View {
         }
         return out
     }
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var swept = false
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 12) {
             Text(label).font(.footnote).foregroundStyle(ProofCamTheme.secondary).frame(width: 64, alignment: .leading)
             Text(styled).font(.system(.caption, design: .monospaced)).textSelection(.enabled)
                 .fixedSize(horizontal: false, vertical: true)
+                .mask(alignment: .leading) {
+                    Rectangle().scaleEffect(x: swept || reduceMotion ? 1 : 0.001, anchor: .leading)
+                }
         }
+        .onAppear { withAnimation(.easeOut(duration: 0.8).delay(0.25)) { swept = true } }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(label == "This file" && digest != reference ? "This file's fingerprint differs from the proof" : "\(label) fingerprint")
     }
