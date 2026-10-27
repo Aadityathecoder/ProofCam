@@ -2,35 +2,55 @@
 
 ## Direction
 
-ProofCam is a professional camera and image-integrity tool. The interface uses restrained color, clear hierarchy, and direct language. Photography and verification results take priority over decoration.
+ProofCam is a camera and image-integrity tool for people documenting their communities. The interface is calm and editorial: restrained slate-blue color, a display face for headlines, native controls everywhere else. Photography and verification results take priority over decoration.
+
+The brand symbol is a print registration mark: an image and its proof lining up.
 
 ## Color
 
-Colors adapt to the device's appearance through `ProofCamTheme`:
+Colors adapt to the device's appearance through `ProofCamTheme` (`CameraScreen.swift`):
 
-| Role | Light | Dark |
-| --- | --- | --- |
-| Background | Cool gray `#F2F4F7` | Charcoal `#0D131C` |
-| Surface | White `#FFFFFF` | Slate `#17212E` |
-| Primary text | Ink `#18212D` | Cool white `#E6EBF2` |
-| Primary button | Navy `#233F60` | Steel navy `#304F73` |
-| Control accent | Navy `#264C77` | Pale steel blue `#A6C2E2` |
-| Border | Gray `#D9DFE7` | Slate gray `#303D4D` |
-| Verified state | Green `#216E51` | Light green `#8CC7AC` |
-| Warning | Rust `#A14B27` | Muted orange `#E1A27E` |
+| Role | Token | Light | Dark |
+| --- | --- | --- | --- |
+| Background | `background` | `#F7F9FB` | `#12181F` |
+| Atmosphere (gradient end) | `atmosphere` | `#E8EEF3` | `#161E27` |
+| Surface | `surface` | `#FFFFFF` | `#1A222B` |
+| Muted surface | `surfaceMuted` | `#EFF3F6` | `#222C36` |
+| Primary text | `text` | `#202C38` | `#E7EDF3` |
+| Secondary text | `secondary` | `#647587` | `#9DAEBF` |
+| Border | `border` | `#DDE5EC` | `#2C3844` |
+| Brand / primary button | `primary` | `#889EB5` | `#889EB5` |
+| Label on brand fill | `onPrimary` | `#202C38` | `#202C38` |
+| Brand light / pale | `brandLight`, `brandPale` | `#A8BBCD`, `#DCE6EE` | `#A8BBCD`, `#2A3644` |
+| Controls and selection | `accent` | `#526A82` | `#A8BBCD` |
+| Verified | `success` | `#397866` | `#6FB39E` |
+| Mismatch / error | `warning` | `#B65A58` | `#E08A87` |
 
-Success and warning colors convey status with accompanying text and symbols. Ordinary controls use navy or neutral colors. White labels are used on the dark primary button fills in both appearances.
+Only two gradients are used: `brandGradient` (`#889EB5 → #A8BBCD`) on hero artwork, and `atmosphereGradient` (background → atmosphere) behind Capture and the introduction. Status always pairs color with a symbol and text.
 
-## Typography and components
+## Typography
 
-Use native system sans-serif text with semibold headlines. Monospaced text is limited to short technical labels. Keep copy literal: “Verify a photo,” “Photo library,” and “No captured photos.”
+- **Display:** Avenir Next Demi Bold via `ProofCamType.display`, scaled with Dynamic Type, for screen titles and result headlines.
+- **UI:** SF Pro text styles.
+- **Technical:** SF Mono (`ProofCamType.technical`) for SHA-256 digests and capture IDs.
 
-Use 10–12 point surface corners, thin borders, generous spacing, and 44-point minimum control targets. Native forms, navigation, tab bars, system pickers, and share sheets remain the interaction foundation. Camera controls stay legible against the viewfinder.
+Use sentence case. Avoid uppercase labels and heavy bold.
 
-`ProofCamMark` combines a simple viewfinder symbol and system-type wordmark. `ProofDocumentIllustration` uses a restrained photo/signature diagram; `SectionLabel` provides neutral section labels. Decorative archive prints, seals, landscape art, and workshop language have been removed.
+## Components
+
+- `PrimaryButtonStyle`: brand fill, dark label, 14-point radius, press and disabled states. `SecondaryButtonStyle`: white surface with a 1-point border.
+- `RecordRow`: label/value line used for evidence records in Verify and photo detail.
+- `RegistrationMark` / `ProofCamMark`: brand symbol and wordmark.
+- Radii: 8 small controls, 10 thumbnails, 14 cards and buttons, 20 viewfinder, 22 hero artwork.
+
+## Screens
+
+- **Capture:** viewfinder with corner marks, tap-to-focus indicator, 1×/2× zoom, flash, camera switch, readiness status. After capture, an outcome sheet shows the photo with the app's status message.
+- **Verify:** grouped source list (Photos, Files, separate proof file). Results show the photo full-bleed, the status, an evidence record, both SHA-256 fingerprints with differing characters highlighted, and what the result does and doesn't confirm.
+- **Settings:** native form with grid, haptics, save-to-Photos, signing explanation, permissions, and the introduction.
 
 ## Accessibility and behavior
 
-Preserve system light/dark appearance, scalable native text styles, and safe-area-aware layouts. Status must be understandable without color. The visual refresh does not alter capture, signing, storage, or verification behavior.
+Preserve system light/dark appearance, Dynamic Type, reduced motion, and safe-area-aware layouts. Touch targets are at least 44 points. The visual layer does not alter capture, signing, storage, or verification behavior.
 
 The app exposes Capture, Verify, and Settings. Collections, Safe Copies, and Evidence Packet export are not implemented destinations.
