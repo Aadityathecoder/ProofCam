@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F7F9FB">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#12181F">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Take photos that carry a signed proof inside the JPEG, and check whether a photo still matches its proof. Everything runs in your browser.">
+  <title>ProofCam</title>
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@600&display=swap">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <!-- First-launch introduction; Settings reopens it as a dialog. -->
+  <div id="intro-root" class="intro-root" hidden></div>
+
+  <div class="shell" id="shell" hidden>
+    <nav class="tabs" aria-label="Main">
+      <div class="rail-brand" data-lockup></div>
+      <button class="tab" data-tab="capture" aria-current="page"><span data-icon="camera"></span><span>Capture</span></button>
+      <button class="tab" data-tab="verify"><span data-icon="scope"></span><span>Verify</span></button>
+      <button class="tab" data-tab="settings"><span data-icon="sliders"></span><span>Settings</span></button>
+      <p class="rail-note">No account. Photos stay in this browser.</p>
+    </nav>
+
+    <main>
+      <!-- Capture -->
+      <section class="screen capture" id="capture" aria-label="Capture">
+        <header class="capture-bar">
+          <button class="icon-button" id="flash" aria-label="Turn flash on" disabled></button>
+          <span data-lockup></span>
+          <span class="aspect" aria-label="Photo aspect ratio, four by three">4:3</span>
+        </header>
+        <div class="viewfinder" id="viewfinder">
+          <video id="video" playsinline muted autoplay aria-label="Camera preview"></video>
+          <svg class="grid" id="grid" viewBox="0 0 3 3" preserveAspectRatio="none" aria-hidden="true" hidden>
+            <path d="M1 0V3M2 0V3M0 1H3M0 2H3"/>
+          </svg>
+          <span class="corners" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span class="focus-ring" id="focus-ring" aria-hidden="true" hidden></span>
+          <div class="zoom" id="zoom" role="group" aria-label="Zoom">
+            <button data-zoom="1" aria-label="Zoom 1 times" aria-pressed="true">1×</button>
+            <button data-zoom="2" aria-label="Zoom 2 times" aria-pressed="false">2×</button>
+          </div>
+          <div class="camera-message" id="camera-message">
+            <span data-icon="camera" data-size="36"></span>
+            <p id="camera-message-text">Opening camera…</p>
+            <button class="button primary" id="camera-retry" hidden>Allow camera</button>
+          </div>
+          <div class="signing-scrim" id="signing" hidden>
+            <div class="signing-card" role="status">
+              <span class="alignment" data-phase="searching" data-size="88"></span>
+              <p>Embedding proof and signing…</p>
+            </div>
+          </div>
+          <span class="shutter-flash" id="shutter-flash" aria-hidden="true"></span>
+        </div>
+        <div class="capture-controls">
+          <p class="readiness" id="readiness" role="status"><span class="dot"></span><span id="readiness-text">Starting camera</span></p>
+          <div class="capture-row">
+            <button class="thumb" id="thumb" aria-label="View captured photos"><span data-icon="photos"></span></button>
+            <button class="shutter" id="shutter" aria-label="Take signed photo" disabled><span></span></button>
+            <button class="round-button" id="switch-camera" aria-label="Switch camera" disabled><span data-icon="flip"></span></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Verify -->
+      <section class="screen verify" id="verify" aria-label="Verify" hidden>
+        <div class="verify-chooser" id="verify-chooser">
+          <h1 class="display-xl">Verify a photo</h1>
+          <p class="lede">Choose an original. Its signed proof is checked privately in this browser.</p>
+          <div class="source-list" id="drop-zone">
+            <label class="source-row" for="pick-photo">
+              <span class="source-icon" data-icon="photo"></span>
+              <span><strong>Photos</strong><small>Pick from your library</small></span>
+              <span data-icon="chevronRight" data-size="16"></span>
+            </label>
+            <label class="source-row" for="pick-file">
+              <span class="source-icon" data-icon="folder"></span>
+              <span><strong>Files</strong><small>The original JPEG or PNG</small></span>
+              <span data-icon="chevronRight" data-size="16"></span>
+            </label>
+            <label class="source-row" for="pick-receipt">
+              <span class="source-icon" data-icon="doc"></span>
+              <span><strong>Separate proof file</strong><small id="receipt-subtitle">For copies whose embedded proof was removed</small></span>
+              <span data-icon="chevronRight" data-size="16"></span>
+            </label>
+            <p class="drop-hint">You can also drop a photo or proof file here.</p>
+          </div>
+          <button class="text-button" id="clear-receipt" hidden>Remove separate proof</button>
+          <input type="file" id="pick-photo" accept="image/jpeg,image/png" hidden>
+          <input type="file" id="pick-file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" hidden>
+          <input type="file" id="pick-receipt" accept=".json,application/json" hidden>
+        </div>
+        <div class="verify-result" id="verify-result" hidden></div>
+      </section>
+
+      <!-- Settings -->
+      <section class="screen settings" id="settings" aria-label="Settings" hidden>
+        <h1 class="display-l">Settings</h1>
+        <div class="group identity">
+          <span class="identity-mark" data-ring="md"></span>
+          <span><strong class="display-s">ProofCam</strong><small>Capture and image integrity</small></span>
+        </div>
+
+        <h2 class="group-title">Camera</h2>
+        <div class="group">
+          <label class="row"><span>Camera grid</span><input type="checkbox" role="switch" data-pref="cameraGrid"></label>
+          <label class="row"><span>Shutter vibration</span><input type="checkbox" role="switch" data-pref="shutterHaptics"></label>
+        </div>
+        <p class="group-footer" id="haptics-note" hidden>This browser can't vibrate, so the setting has no effect here.</p>
+
+        <h2 class="group-title">Saving</h2>
+        <div class="group">
+          <label class="row"><span>Download each photo</span><input type="checkbox" role="switch" data-pref="saveCopy"></label>
+        </div>
+        <p class="group-footer">Signed copies always stay in ProofCam in this browser. When on, each photo is also downloaded as a file. You can download or share any photo later from the photo viewer.</p>
+
+        <h2 class="group-title">Signatures</h2>
+        <div class="group">
+          <div class="row"><span>Photo signing</span><span class="ok"><span data-icon="check" data-size="18"></span>Always on</span></div>
+        </div>
+        <p class="group-footer">Every completed JPEG carries its signed SHA-256 proof inside the file. The private key was created by this browser and can't be exported from it. Clearing this site's data deletes the key and your saved photos. This detects changes; it does not decide whether a scene is truthful.</p>
+
+        <h2 class="group-title">Help and privacy</h2>
+        <div class="group">
+          <button class="row link" id="open-guide"><span>How ProofCam works</span><span data-icon="chevronRight" data-size="16"></span></button>
+          <div class="row"><span>Camera permission</span><span class="value" id="camera-permission">Unknown</span></div>
+          <div class="row"><span>Photo uploads</span><span class="value">None</span></div>
+        </div>
+        <p class="group-footer">To change camera access, use the site settings in your browser's address bar.</p>
+
+        <h2 class="group-title">Research</h2>
+        <div class="group">
+          <button class="row link" id="open-lab"><span><span>Research lab</span><small>Watermark benchmarks, screenshot recovery and JSON export</small></span><span data-icon="chevronRight" data-size="16"></span></button>
+        </div>
+        <p class="group-footer">For testing how watermarks survive re-saving. Results are measurements, not proof of authenticity.</p>
+
+        <div class="group">
+          <div class="row"><span>Version</span><span class="value">0.1 (web)</span></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="sheet" id="outcome" aria-labelledby="outcome-title"></dialog>
+  <dialog class="panel" id="library" aria-label="Captured photos"></dialog>
+  <dialog class="panel" id="lab" aria-label="Research lab"></dialog>
+  <dialog class="panel guide" id="guide" aria-label="How ProofCam works"></dialog>
+  <div class="toast" id="toast" role="status" hidden></div>
+
+</body>
+</html>
