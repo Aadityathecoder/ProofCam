@@ -24,3 +24,26 @@ public enum ResearchUtilities {
         throw ResearchError.invalidDimensions
     }
 }
+
+/// A 95% Wilson score interval for a proportion of successes in `trials` independent trials.
+/// Unlike the plain normal approximation it stays inside 0...1 and behaves at 0 and `trials` successes.
+/// It is only as honest as the trials are independent; callers must say what the trials were.
+public struct ProportionInterval: Equatable, Sendable {
+    public static let z95 = 1.959963984540054
+    public let successes: Int
+    public let trials: Int
+    public let lower: Double
+    public let upper: Double
+
+    public init?(successes: Int, trials: Int, z: Double = ProportionInterval.z95) {
+        guard trials > 0, successes >= 0, successes <= trials, z.isFinite, z > 0 else { return nil }
+        let n = Double(trials), p = Double(successes) / n, z2 = z * z
+        let denominator = 1 + z2 / n
+        let center = (p + z2 / (2 * n)) / denominator
+        let half = z * (p * (1 - p) / n + z2 / (4 * n * n)).squareRoot() / denominator
+        self.successes = successes
+        self.trials = trials
+        self.lower = max(0, center - half)
+        self.upper = min(1, center + half)
+    }
+}

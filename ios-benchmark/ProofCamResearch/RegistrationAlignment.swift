@@ -1,60 +1,53 @@
 import SwiftUI
 
-/// Two print registration marks. While the app is working the second mark drifts;
-/// a real result then locks it into place (match) or leaves it visibly off (mismatch).
+/// The ProofCam ring mark at work. While a check runs, the back ring set wanders;
+/// a real result then locks it into the front set (match) or leaves it visibly off (mismatch).
 struct RegistrationAlignment: View {
     enum Phase: Equatable { case searching, aligned, offset, idle }
 
     let phase: Phase
     var size: CGFloat = 76
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var settled = false
+    @State private var drift = CGSize(width: 0.9, height: -0.6)
 
+    private var tier: RingMark.Tier { size >= 64 ? .lg : size >= 36 ? .md : .sm }
     private var tint: Color {
         switch phase {
         case .aligned: ProofCamTheme.success
         case .offset: ProofCamTheme.warning
-        case .searching, .idle: ProofCamTheme.secondary
-        }
-    }
-    private var drift: CGSize {
-        switch phase {
-        case .aligned: .zero
-        case .offset: CGSize(width: size * 0.11, height: size * 0.08)
-        case .searching, .idle: CGSize(width: size * 0.34, height: -size * 0.22)
+        case .searching: ProofCamTheme.secondary
+        case .idle: ProofCamTheme.border
         }
     }
 
     var body: some View {
-        ZStack {
-            RegistrationMark().stroke(ProofCamTheme.text, lineWidth: 1.6)
-            if phase == .idle {
-                RegistrationMark().stroke(ProofCamTheme.secondary, style: StrokeStyle(lineWidth: 1.4, dash: [4, 4]))
-            } else if phase == .searching && !reduceMotion {
-                searchingMark
-            } else {
-                RegistrationMark().stroke(tint, lineWidth: 1.6)
-                    .offset(settled || phase != .aligned ? drift : CGSize(width: size * 0.34, height: -size * 0.22))
-            }
-        }
-        .frame(width: size, height: size)
-        .animation(reduceMotion ? nil : .spring(response: 0.55, dampingFraction: 0.7), value: phase)
-        .task(id: phase) {
-            guard phase == .aligned else { return }
-            // Start offset, let that frame render, then spring the mark into register.
-            settled = false
-            await Task.yield()
-            withAnimation(reduceMotion ? nil : .spring(response: 0.55, dampingFraction: 0.7)) { settled = true }
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(label)
+        RingMark(tier: tier, front: ProofCamTheme.text, back: tint, drift: drift)
+            .frame(width: size, height: size)
+            .task(id: phase) { await settle() }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(label)
     }
 
-    /// Slow, looping drift while a result is pending. Replaced by a static mark under Reduce Motion.
-    private var searchingMark: some View {
-        PhaseAnimator([CGSize(width: size * 0.34, height: -size * 0.22), CGSize(width: -size * 0.16, height: size * 0.12), CGSize(width: size * 0.1, height: size * 0.18)]) { offset in
-            RegistrationMark().stroke(ProofCamTheme.secondary, lineWidth: 1.6).offset(offset)
-        } animation: { _ in .easeInOut(duration: 0.9) }
+    private func settle() async {
+        let spring: Animation? = reduceMotion ? nil : .spring(response: 0.55, dampingFraction: 0.7)
+        switch phase {
+        case .searching:
+            guard !reduceMotion else { drift = CGSize(width: 0.9, height: -0.6); return }
+            let wander = [CGSize(width: -0.5, height: 0.4), CGSize(width: 0.3, height: 0.6), CGSize(width: 0.9, height: -0.6)]
+            var index = 0
+            while !Task.isCancelled {
+                withAnimation(.easeInOut(duration: 1.0)) { drift = wander[index % wander.count] }
+                index += 1
+                try? await Task.sleep(for: .milliseconds(1000))
+            }
+        case .aligned:
+            await Task.yield()
+            withAnimation(spring) { drift = .zero }
+        case .offset:
+            withAnimation(spring) { drift = RingMark.resting(tier) }
+        case .idle:
+            drift = .zero
+        }
     }
 
     private var label: String {

@@ -22,6 +22,8 @@
 		DADAE2B0DADDAB25F4B27F45 /* Core/Sources/ProofCamCore/TiledCandidate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73DE32D8E9BD5DE496075A82 /* Core/Sources/ProofCamCore/TiledCandidate.swift */; };
 		E12758713DDE12C5DA3C8F03 /* Core/Sources/ProofCamCore/LocalCaptureReceipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A529787C67D6E61AAEC29E9 /* Core/Sources/ProofCamCore/LocalCaptureReceipt.swift */; };
 		8A46D735FD6CF175D134D76E /* ProofCamResearch/RegistrationAlignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29937530EC3C4A9491C9EB31 /* ProofCamResearch/RegistrationAlignment.swift */; };
+		D1C771E47D2E5DB6106D9DA9 /* ProofCamResearch/ProofCamLogo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E564ED48D553C3A43EDAB9CC /* ProofCamResearch/ProofCamLogo.swift */; };
+		75CE56FA3A9F65319FBF7404 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 628700E60A9DF808F2EE7E70 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +43,8 @@
 		C8354FFE6822D03A3CE46DFC /* Core/Sources/ProofCamCore/ProvenanceWire.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Sources/ProofCamCore/ProvenanceWire.swift; sourceTree = "<group>"; };
 		E974BBA806CB2BAFD0EB7028 /* Core/Sources/ProofCamCore/AdaptiveCandidate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core/Sources/ProofCamCore/AdaptiveCandidate.swift; sourceTree = "<group>"; };
 		29937530EC3C4A9491C9EB31 /* ProofCamResearch/RegistrationAlignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProofCamResearch/RegistrationAlignment.swift; sourceTree = "<group>"; };
+		E564ED48D553C3A43EDAB9CC /* ProofCamResearch/ProofCamLogo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProofCamResearch/ProofCamLogo.swift; sourceTree = "<group>"; };
+		628700E60A9DF808F2EE7E70 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ProofCamResearch/Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +74,8 @@
 				3E5FAAE9AA374C24CAC3157E /* ProofCamResearch/SettingsScreen.swift */,
 				C133981EC9E728DA4356691F /* ProofCamResearch/VerifyScreen.swift */,
 				29937530EC3C4A9491C9EB31 /* ProofCamResearch/RegistrationAlignment.swift */,
+				E564ED48D553C3A43EDAB9CC /* ProofCamResearch/ProofCamLogo.swift */,
+				628700E60A9DF808F2EE7E70 /* Assets.xcassets */,
 				8A529787C67D6E61AAEC29E9 /* Core/Sources/ProofCamCore/LocalCaptureReceipt.swift */,
 				8C1009065D285E9ABAF3861B /* ProofCamResearch/CaptureProvenance.swift */,
 				6A3E4B17C5D88BDD2466A80A /* ProofCamResearch/AppAttestProvenance.swift */,
@@ -93,6 +99,7 @@
 			buildPhases = (
 				878A52FC5FF6A57D50B7B870 /* Sources */,
 				E2AA269EB967A8853A258BFA /* Frameworks */,
+				D358F9953273580C5B97B1E2 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -130,6 +137,17 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		D358F9953273580C5B97B1E2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				75CE56FA3A9F65319FBF7404 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		878A52FC5FF6A57D50B7B870 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -140,6 +158,7 @@
 				9BF61BFD90D4D9EF5E278E8A /* ProofCamResearch/SettingsScreen.swift in Sources */,
 				8459FF819AABB4982CFA3DF1 /* ProofCamResearch/VerifyScreen.swift in Sources */,
 				8A46D735FD6CF175D134D76E /* ProofCamResearch/RegistrationAlignment.swift in Sources */,
+				D1C771E47D2E5DB6106D9DA9 /* ProofCamResearch/ProofCamLogo.swift in Sources */,
 				E12758713DDE12C5DA3C8F03 /* Core/Sources/ProofCamCore/LocalCaptureReceipt.swift in Sources */,
 				C7ED9D3B9CC9DB2D1B9D9C2E /* ProofCamResearch/CaptureProvenance.swift in Sources */,
 				C8FD0B7CB2BDE843077E88B6 /* ProofCamResearch/AppAttestProvenance.swift in Sources */,
@@ -204,6 +223,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(PROOFCAM_APP_ATTEST_ENTITLEMENTS)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -277,6 +297,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(PROOFCAM_APP_ATTEST_ENTITLEMENTS)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;

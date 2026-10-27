@@ -12,8 +12,8 @@ struct SettingsScreen: View {
             Form {
                 Section {
                     HStack(spacing: 14) {
-                        RegistrationMark().stroke(ProofCamTheme.onPrimary, lineWidth: 1.6)
-                            .frame(width: 26, height: 26).frame(width: 52, height: 52)
+                        RingMark(tier: .md, front: ProofCamTheme.onPrimary, back: .white.opacity(0.8))
+                            .frame(width: 36, height: 36).frame(width: 52, height: 52)
                             .background(ProofCamTheme.brandGradient, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                         VStack(alignment: .leading, spacing: 2) {
                             Text("ProofCam").font(ProofCamType.display(20, relativeTo: .title3))
@@ -161,9 +161,8 @@ private struct IntroArtwork: View {
                 .offset(x: tucked ? 46 : 96, y: tucked ? -40 : 36)
                 printCard("Proof inside", symbol: "photo", angle: -3).offset(x: -30)
             default:
-                RegistrationMark().stroke(ink, lineWidth: 2).frame(width: 140, height: 140)
-                RegistrationMark().stroke(Color.white, lineWidth: 2).frame(width: 140, height: 140)
-                    .offset(x: aligned ? 0 : 34, y: aligned ? 0 : -22)
+                RingMark(tier: .lg, front: ink, back: .white, drift: aligned ? .zero : CGSize(width: 0.9, height: -0.6))
+                    .frame(width: 150, height: 150)
             }
         }
         .accessibilityHidden(true)

@@ -112,7 +112,7 @@ import CryptoKit
 
 struct VerifyScreen: View {
     @ObservedObject var provenance: CaptureProvenance
-    @StateObject private var model = PhotoVerification()
+    @ObservedObject var model: PhotoVerification
     @State private var selected: PhotosPickerItem?
     @State private var importing = false
     @State private var signatureImport = false
@@ -192,6 +192,9 @@ struct VerifyScreen: View {
             .background(ProofCamTheme.surface, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             .overlay { RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(ProofCamTheme.border) }
             .disabled(model.checking)
+            Text("Images from anywhere can be checked, including ones made with AI. They only match if they still carry their own ProofCam proof.")
+                .font(.footnote).foregroundStyle(ProofCamTheme.secondary).fixedSize(horizontal: false, vertical: true)
+                .padding(.top, 12).padding(.horizontal, 4)
             if model.hasImportedReceipt {
                 Button("Remove separate proof") { model.clearReceipt(captures: provenance.pending) }
                     .font(.footnote).tint(ProofCamTheme.accent).padding(.top, 12).padding(.leading, 4)
@@ -253,7 +256,7 @@ struct VerifyScreen: View {
         switch model.outcome {
         case .verified: return ["Whether the event happened as described.", "Who took the photo, or who owns the key.", "Whether the scene was staged or AI-generated."]
         case .mismatch: return ["What changed, who changed it, or why.", "Whether the change matters."]
-        case .noProof: return ["That the photo is fake. Most photos weren’t taken with ProofCam."]
+        case .noProof: return ["Whether an imported image is a real photograph or AI-generated.", "That the photo is fake. Most photos weren’t taken with ProofCam."]
         default: return ["Anything about the photo’s content."]
         }
     }

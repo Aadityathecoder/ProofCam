@@ -125,6 +125,7 @@ struct ResearchView: View {
                     }.padding(.vertical, 6)
                 }
                 benchmarkSection
+                reliabilitySection
                 screenshotSection
                 exportSection
                 captureSection
@@ -172,6 +173,14 @@ struct ResearchView: View {
             Button("Save marked JPEG") { export(model.marked, name: "proofcam-marked.jpg", type: .jpeg) }.disabled(model.marked == nil || model.busy)
         } header: { Text("Watermark benchmark") } footer: {
             Text("Applies to the next source. v1 is fastest, v2 favors stronger marking, and v3 (the default) uses smaller tiles with adaptive strength. v2 and v3 search edited images and take longer.")
+        }
+    }
+
+    private var reliabilitySection: some View {
+        Section {
+            ForEach(WatermarkEvidence.rows) { EvidenceRow(row: $0) }
+        } header: { Text("How reliable is the watermark check?") } footer: {
+            Text("Counts come from the adaptive v3 simulation in benchmark/reports (step06-ios-adaptive-validation.json), run on a Linux computer, not an iPhone. Ranges are 95% Wilson score intervals. They describe only whether the watermark can be found again after edits. They say nothing about whether a photo is real or AI-generated.")
         }
     }
 
@@ -250,4 +259,47 @@ struct ResearchView: View {
     }
 
     private func export(_ data: Data?, name: String, type: UTType) { guard let data else { return }; document = ExportFile(data: data); filename = name; exportType = type; exporting = true }
+}
+
+/// The simulation counts behind the reliability ranges. Each row says what its trials really were,
+/// because an interval is only as honest as the independence of those trials.
+private struct WatermarkEvidence {
+    struct Row: Identifiable {
+        let id: Int
+        let title: String
+        let successes: Int
+        let trials: Int
+        let outcome: String
+        let caveat: String
+    }
+    static let rows = [
+        Row(id: 0, title: "Marked photos recovered, per source photo", successes: 5, trials: 5, outcome: "recovered",
+            caveat: "Only 5 source photos, so this range is wide. It is the most cautious of the three."),
+        Row(id: 1, title: "Marked copies recovered", successes: 125, trials: 125, outcome: "recovered",
+            caveat: "These are 25 edits of the same 5 photos, so they are not independent trials. Treat this range as optimistic."),
+        Row(id: 2, title: "Unmarked images wrongly detected", successes: 0, trials: 100, outcome: "wrongly detected",
+            caveat: "Synthetic noise images, not real photographs. This is not a real-photo false-positive study.")
+    ]
+}
+
+private struct EvidenceRow: View {
+    let row: WatermarkEvidence.Row
+    private var range: String {
+        guard let interval = ProportionInterval(successes: row.successes, trials: row.trials) else { return "No range" }
+        return String(format: "%.1f%% to %.1f%%", interval.lower * 100, interval.upper * 100)
+    }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(row.title).font(.subheadline.weight(.medium))
+                Spacer(minLength: 8)
+                Text("\(row.successes) of \(row.trials)").font(.system(.footnote, design: .monospaced)).foregroundStyle(ProofCamTheme.secondary)
+            }
+            Text("95% range: \(range)").font(.subheadline).foregroundStyle(ProofCamTheme.accent)
+            Text(row.caveat).font(.footnote).foregroundStyle(ProofCamTheme.secondary).fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(row.title). \(row.successes) of \(row.trials) \(row.outcome). 95 percent range \(range). \(row.caveat)")
+    }
 }

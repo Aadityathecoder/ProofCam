@@ -1,4 +1,5 @@
 import SwiftUI
+import PhotosUI
 import AVFoundation
 import UIKit
 import CryptoKit
@@ -43,25 +44,14 @@ enum ProofCamType {
     static let technical = Font.system(.footnote, design: .monospaced)
 }
 
-/// Print registration mark: the ProofCam symbol for an image and its proof lining up.
-struct RegistrationMark: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let radius = min(rect.width, rect.height) * 0.27
-        path.addEllipse(in: CGRect(x: rect.midX - radius, y: rect.midY - radius, width: radius * 2, height: radius * 2))
-        path.move(to: CGPoint(x: rect.midX, y: rect.minY)); path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
-        path.move(to: CGPoint(x: rect.minX, y: rect.midY)); path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
-        return path
-    }
-}
-
+/// The ProofCam ring mark beside the custom wordmark.
 struct ProofCamMark: View {
     var light = false
     var body: some View {
-        HStack(spacing: 8) {
-            RegistrationMark().stroke(light ? Color.white : ProofCamTheme.text, lineWidth: 1.5)
-                .frame(width: 20, height: 20)
-            Text("ProofCam").font(ProofCamType.display(19, relativeTo: .headline))
+        HStack(spacing: 9) {
+            RingMark(tier: .md, front: light ? .white : ProofCamTheme.text, back: light ? .white.opacity(0.55) : ProofCamTheme.primary)
+                .frame(width: 26, height: 26)
+            ProofCamWordmark(height: 15, color: light ? .white : ProofCamTheme.text, ghost: light ? .white.opacity(0.55) : ProofCamTheme.primary)
         }.accessibilityElement(children: .combine).accessibilityLabel("ProofCam")
     }
 }
@@ -273,15 +263,16 @@ private struct CameraPreview: UIViewRepresentable {
 
 struct CameraRootView: View {
     @StateObject private var provenance = CaptureProvenance()
+    @StateObject private var verification = PhotoVerification()
     @AppStorage("proofcam.introductionCompleted") private var introductionCompleted = false
     @State private var tab = 0
     var body: some View {
         Group {
             if introductionCompleted {
                 TabView(selection: $tab) {
-                    CaptureScreen(provenance: provenance, active: tab == 0)
+                    CaptureScreen(provenance: provenance, active: tab == 0, onImport: importPhoto)
                         .tabItem { Label("Capture", systemImage: "camera") }.tag(0)
-                    VerifyScreen(provenance: provenance)
+                    VerifyScreen(provenance: provenance, model: verification)
                         .tabItem { Label("Verify", systemImage: "scope") }.tag(1)
                     SettingsScreen()
                         .tabItem { Label("Settings", systemImage: "slider.horizontal.3") }.tag(2)
@@ -291,11 +282,20 @@ struct CameraRootView: View {
             }
         }.tint(ProofCamTheme.accent)
     }
+
+    /// Imported images are checked, never signed: a signature must keep meaning "the camera captured these bytes".
+    private func importPhoto(_ data: Data?) {
+        if let data { verification.load(data, captures: provenance.pending) }
+        else { verification.fail("The photo could not be opened. Try choosing its original file.") }
+        tab = 1
+    }
 }
 
 struct CaptureScreen: View {
     @ObservedObject var provenance: CaptureProvenance
     let active: Bool
+    let onImport: (Data?) -> Void
+    @State private var importItem: PhotosPickerItem?
     @StateObject private var camera = CameraSession()
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -402,7 +402,7 @@ struct CaptureScreen: View {
                     LinearKeyframe(reduceMotion ? 0 : 0.85, duration: 0.04)
                     CubicKeyframe(0, duration: 0.32)
                 }
-                .frame(height: min(geometry.size.width * 4 / 3, max(220, geometry.size.height - 200)))
+                .frame(height: min(geometry.size.width * 4 / 3, max(220, geometry.size.height - 292)))
                 .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .padding(.horizontal, 12)
                 VStack(spacing: 16) {
@@ -446,6 +446,15 @@ struct CaptureScreen: View {
                                 .overlay { Circle().stroke(ProofCamTheme.border) }
                         }.disabled(!camera.ready || working).accessibilityLabel("Switch camera")
                     }.padding(.horizontal, 32)
+                    VStack(spacing: 2) {
+                        PhotosPicker(selection: $importItem, matching: .images, preferredItemEncoding: .current) {
+                            Label("Import a photo to check", systemImage: "square.and.arrow.down")
+                                .font(.subheadline.weight(.medium)).frame(minHeight: 44).padding(.horizontal, 16)
+                        }.buttonStyle(.plain).foregroundStyle(ProofCamTheme.accent).disabled(working)
+                        Text("Imports are checked, not signed. ProofCam can’t tell a real photo from an AI image.")
+                            .font(.caption).foregroundStyle(ProofCamTheme.secondary).multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
+                    }
                 }.padding(.top, 16)
                 Spacer(minLength: 0)
             }.foregroundStyle(ProofCamTheme.text).background(ProofCamTheme.atmosphereGradient.ignoresSafeArea(edges: .top))
@@ -461,6 +470,14 @@ struct CaptureScreen: View {
             provenance.notice = nil
         }
         .onChange(of: camera.takingPhoto) { _, taking in if taking { shotCount += 1 } }
+        .onChange(of: importItem) { _, item in
+            guard let item else { return }
+            Task {
+                let data = try? await item.loadTransferable(type: Data.self)
+                onImport(data)
+                importItem = nil
+            }
+        }
         .sheet(item: $outcome, onDismiss: {
             if openLibraryAfterOutcome { openLibraryAfterOutcome = false; library = true }
         }) { result in
